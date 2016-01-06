@@ -11,16 +11,21 @@
 	                <label for="question{{ n }}" class="col-sm-1 control-label">{{ n+1 }}.</label>
 	                <div class="col-sm-11">
 	                    <div class="fg-line">
-	                        <input type="text" class="form-control input-sm" ng-model="questions[n]" placeholder="Question {{ n+1 }}">
+	                        <input type="text" class="form-control input-sm" ng-model="questions[n]" placeholder="Question {{ n+1 }}" ng-readonly="submitted">
 	                    </div>
 	                </div>
 	            </div>
             </div>
-            <div class="form-group">
-                <div class="col-sm-offset-1 col-sm-11">
-                    <button type="submit" class="btn btn-primary btn-sm">Submit</button>
-                </div>
-            </div>
+            <div ng-show="!submitted">
+	            <div class="form-group">
+	                <div class="col-sm-offset-1 col-sm-11">
+	                    <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+	                </div>
+	            </div>
+	        </div>
+	        <div ng-show="submitted">
+	            <h2><small>Waiting for opponent responses...</small></h2>
+	        </div>
         </form>
     </div>
 </div>

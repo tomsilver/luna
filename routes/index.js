@@ -65,7 +65,13 @@ router.param('game', function(req, res, next, id) {
 });
 
 router.get('/home/:game', function(req, res) {
-  res.json(req.game);
+    req.game
+   	.populate('questions1')
+   	.populate('questions2', function(err, game) {
+    	if (err) { return next(err); }
+
+    	res.json(req.game);
+  	});
 });
 
 router.post('/home/:game/interview', function(req, res, next) {
@@ -76,8 +82,6 @@ router.post('/home/:game/interview', function(req, res, next) {
   var i = 0;
 
   var saveGame = function() {
-  	console.log("questions:");
-  	console.log(questions);
   	req.game['questions'+String(playerNum)] = questions;
   	req.game.save(function(err, game) {
 	  if(err){ return next(err); }

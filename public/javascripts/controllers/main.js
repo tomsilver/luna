@@ -58,6 +58,23 @@ luna
 
     })
 
+    .controller('homeCtrl', [
+        '$scope',
+        '$location',
+        'games',
+        function($scope, $location, games){
+
+        $scope.playerID = { playerID: "568d621f237a26700ffe0379" };
+
+        $scope.newGame = function() {
+            games.create($scope.playerID, function(newGame) {
+                $location.path('/home/'+newGame._id);
+            });
+        };
+    }])
+
+
+
 
     //=================================================
     // Profile
@@ -96,6 +113,11 @@ luna
         $scope.player = null;
         $scope.N = [0, 1, 2, 3, 4];
         $scope.questions = [];
+        $scope.submitted = false;
+
+        for (var i=0; i<game.questions1.length; i++) {
+            $scope.questions[game.questions1[i].questionNum] = game.questions1[i].question;
+        }
 
         $scope.changePhase = function(phase) {
             var nextState = 'home.game.final';
@@ -113,6 +135,7 @@ luna
         };
 
         $scope.submitQuestions = function() {
+            $scope.submitted = true;
             games.addQuestions($stateParams.id, $scope.questions);
             $scope.changePhase($scope.phase+1);
         };

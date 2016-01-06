@@ -9,7 +9,8 @@ luna
             .state ('home', {
                 abstract: true,
                 url: '/home',
-                templateUrl: 'views/home.html'
+                templateUrl: 'views/home.html',
+                controller: 'homeCtrl'
             })
 
             //New game

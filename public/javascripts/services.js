@@ -63,7 +63,7 @@ luna
 
     .factory('games', ['$http', function($http){
       var o = {
-        game: null,
+        games: [],
         myQuestions: [],
         opQuestions: [],
         myResponses: [],
@@ -72,9 +72,10 @@ luna
         opGuess: null
       };
 
-      o.create = function(player) {
+      o.create = function(player, callback) {
         return $http.post('/home', player).success(function(data){
-          o.game = data;
+          o.games.push(data);
+          callback(data);
         });
       };
 
