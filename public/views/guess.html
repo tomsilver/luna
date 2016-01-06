@@ -1,0 +1,20 @@
+<div class="card">
+    <div class="card-header">
+        <h2>Guess Phase<small>Your opponent has answered your questions! You are now in the Guess Phase of the Luna Game, which is the final phase. Below are your opponent’s answers.
+</small></h2>
+    </div>
+
+    <div class="card-body card-padding">
+        <div class="form-group fg-line" ng-repeat="n in [1, 2, 3, 4, 5]">
+            <label for="response{{n}}">What is the third prime number?</label>
+            <div id="response{{n}}">5</div>
+        </div>
+        <form role="form">
+            <div class="form-group fg-line">
+	                <label for="guess">Based on these answers, please enter a guess of your opponent’s Smarts Rating.</label>
+	                <input type="text" class="form-control input-lg" id="guess" placeholder="Enter guess">
+	            </div>
+            <button type="submit" class="btn btn-primary btn-sm m-t-10" ng-click="changePhase(phase+1)">Submit</button>
+        </form>
+    </div>
+</div>

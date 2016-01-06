@@ -32,3 +32,65 @@ luna
         
         return gs;
     })
+
+    //==============================================
+    // Players
+    //==============================================
+
+    .factory('players', ['$http', function($http){
+      var o = {
+        player: null
+      };
+
+      o.create = function(player) {
+        return $http.post('/profile', player).success(function(data){
+          o.player = data;
+        });
+      };
+
+      o.get = function(id) {
+        return $http.get('/profile/' + id).then(function(res){
+          return res.data;
+        });
+      };
+
+      return o;
+    }])
+
+    //==============================================
+    // Games
+    //==============================================
+
+    .factory('games', ['$http', function($http){
+      var o = {
+        game: null,
+        myQuestions: [],
+        opQuestions: [],
+        myResponses: [],
+        opResponses: [],
+        myGuess: null,
+        opGuess: null
+      };
+
+      o.create = function(player) {
+        return $http.post('/home', player).success(function(data){
+          o.game = data;
+        });
+      };
+
+      o.get = function(id) {
+        return $http.get('/home/' + id).then(function(res){
+          return res.data;
+        });
+      };
+
+      o.addQuestions = function(id, questions) {
+        return $http.post('/home/'+ id +'/interview', questions).success(function(data){
+          o.myQuestions = data;
+        });
+      };
+
+      return o;
+    }])
+
+

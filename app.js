@@ -1,3 +1,12 @@
+var mongoose = require('mongoose');
+// mongo schemas
+require('./models/Players');
+require('./models/Questions');
+require('./models/Responses');
+require('./models/Games');
+
+mongoose.connect('mongodb://localhost/luna');
+
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');

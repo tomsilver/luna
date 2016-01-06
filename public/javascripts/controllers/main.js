@@ -63,15 +63,60 @@ luna
     // Profile
     //=================================================
 
-    .controller('profileCtrl', function(growlService){
+    .controller('profileCtrl', [
+        '$scope', 
+        'players',
+        'player', 
+        function($scope, players, player){
         
         //Get Profile Information from profileService Service
         
         //User    
-        this.fullName = "Tom Silver";
-        this.joinDate = 1288323623006;
-        this.emailAddress = "tomssilver@gmail.com";
-        this.numWins = 24;
-        this.smartsRating = 82;
+        $scope.fullName = player.name;
+        $scope.joinDate = player.joinDate;
+        $scope.emailAddress = "tomssilver@gmail.com";
+        $scope.numWins = 24;
+        $scope.smartsRating = 82;
 
-    })
+    }])
+
+    //=================================================
+    // Game
+    //=================================================
+
+    .controller('gameCtrl', [
+        '$scope',
+        '$state',
+        '$stateParams', 
+        'games',
+        'game', 
+        function($scope, $state, $stateParams, games, game){
+
+        $scope.phase = 0;
+        $scope.player = null;
+        $scope.N = [0, 1, 2, 3, 4];
+        $scope.questions = [];
+
+        $scope.changePhase = function(phase) {
+            var nextState = 'home.game.final';
+            if (phase < 3) {
+                nextState = 'home.game.interview';
+            }
+            else if (phase < 5) {
+                nextState = 'home.game.response';
+            }
+            else if (phase < 7) {
+                nextState = 'home.game.guess';
+            }
+            $scope.phase = phase;
+            $state.go(nextState);
+        };
+
+        $scope.submitQuestions = function() {
+            games.addQuestions($stateParams.id, $scope.questions);
+            $scope.changePhase($scope.phase+1);
+        };
+
+        $scope.changePhase(game.phase);
+
+    }])

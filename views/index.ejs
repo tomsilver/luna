@@ -20,7 +20,14 @@
 
     <body data-ng-class="{ 'sw-toggled': lunaCtrl.layoutType === '1'}">
 
-        <data ui-view></data>
+        <header id="header" data-current-skin={{lunaCtrl.currentSkin}} data-ng-include src="'template/header.html'" data-ng-controller="headerCtrl as hctrl"></header>
+
+        <section id="main">
+            <aside id="sidebar" data-ng-include src="'/template/sidebar-left.html'" data-ng-class="{ 'toggled': lunaCtrl.sidebarToggle.left === true }"></aside>
+            
+            <section id="content" class="page-view" data-ui-view></section>
+
+        </section>
 
         <!-- Older IE warning message -->
         <!--[if lt IE 9]>
@@ -64,6 +71,8 @@
                 <p>Sorry for the inconvenience!</p>
             </div>
         <![endif]-->
+
+        <footer id="footer" data-ng-include src="'template/footer.html'"></footer>
 
 
         <!-- Core -->
