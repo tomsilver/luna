@@ -18,14 +18,14 @@ var Game = mongoose.model('Game');
 /* new game */
 router.post('/home', function(req, res, next) {
 	/* look up player */
-	var query = Player.findById(req.body.playerID);
+	var query = Player.findById(req.body._id);
 	query.exec(function (err, player){
 	    if (err) { return next(err); }
 	    if (!player) { return next(new Error('can\'t find player')); }
 
 	    req.player = player;
 		/* first check if there are any open games */
-		var query = {"phase": 0, "player1": { $ne: player }};
+		var query = {"player2": null, "player1": { $ne: player }};
 		var update = {
 	     	$set: { phase: 1, player2: player }
 		};
@@ -66,8 +66,8 @@ router.param('game', function(req, res, next, id) {
 
 router.get('/home/:game', function(req, res) {
     req.game
-   	.populate('questions1')
-   	.populate('questions2', function(err, game) {
+   	  .populate('questions1')
+   	  .populate('questions2', function(err, game) {
     	if (err) { return next(err); }
 
     	res.json(req.game);
@@ -75,9 +75,9 @@ router.get('/home/:game', function(req, res) {
 });
 
 router.post('/home/:game/interview', function(req, res, next) {
-  var player = null;
-  var playerNum = 2;
-  var questionInputs = req.body;
+  var player = req.body.player;
+  var playerNum = req.body.playerNum;
+  var questionInputs = req.body.questions;
   var questions = [];
   var i = 0;
 
@@ -85,7 +85,17 @@ router.post('/home/:game/interview', function(req, res, next) {
   	req.game['questions'+String(playerNum)] = questions;
   	req.game.save(function(err, game) {
 	  if(err){ return next(err); }
-	  res.json(questions);
+	  // To avoid race condition, atomically update phase
+	  Game.findByIdAndUpdate(
+		req.game._id,
+		{ $inc: { phase : 1} },
+		{ new: true }, function(err, game) {
+		res.json({
+			questions: questions,
+			nextPhase: game.phase
+		});
+	  });
+
 	}); 
   };
 
@@ -96,7 +106,6 @@ router.post('/home/:game/interview', function(req, res, next) {
   	if (questionInputs.length == 0)
   		saveGame();
   	else {
-  		console.log(questionInputs.length);
   		var nextQuestion = questionInputs.shift();
 	  	
 	  	questionInput = {

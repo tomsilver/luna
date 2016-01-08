@@ -85,9 +85,10 @@ luna
         });
       };
 
-      o.addQuestions = function(id, questions) {
+      o.addQuestions = function(id, questions, callback) {
         return $http.post('/home/'+ id +'/interview', questions).success(function(data){
-          o.myQuestions = data;
+          o.myQuestions = data.questions;
+          callback(data.nextPhase);
         });
       };
 

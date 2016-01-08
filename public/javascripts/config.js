@@ -35,7 +35,8 @@ luna
             //Interview
             .state('home.game.interview', {
                 url: '/interview',
-                templateUrl: 'views/interview.html'
+                templateUrl: 'views/interview.html',
+                controller: 'interviewCtrl'
             })
 
             //Response

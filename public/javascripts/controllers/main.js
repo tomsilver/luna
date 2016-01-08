@@ -48,6 +48,11 @@ luna
         this.skinSwitch = function (color) {
             this.currentSkin = color;
         }
+
+        $scope.player = { _id: "568d621f237a26700ffe0379" };
+
+        // 568d621f237a26700ffe0379
+        // 568c52ded4566fa60b760937
     
     })
 
@@ -64,10 +69,8 @@ luna
         'games',
         function($scope, $location, games){
 
-        $scope.playerID = { playerID: "568d621f237a26700ffe0379" };
-
         $scope.newGame = function() {
-            games.create($scope.playerID, function(newGame) {
+            games.create($scope.player, function(newGame) {
                 $location.path('/home/'+newGame._id);
             });
         };
@@ -109,37 +112,68 @@ luna
         'game', 
         function($scope, $state, $stateParams, games, game){
 
-        $scope.phase = 0;
-        $scope.player = null;
-        $scope.N = [0, 1, 2, 3, 4];
-        $scope.questions = [];
-        $scope.submitted = false;
+        $scope.phase = game.phase;
 
-        for (var i=0; i<game.questions1.length; i++) {
-            $scope.questions[game.questions1[i].questionNum] = game.questions1[i].question;
+        if (game.player1 == $scope.player._id) {
+            $scope.playerNum = 1;
+        }
+        else if (game.player2 == $scope.player._id) {
+            $scope.playerNum = 2;
+        }
+        else {
+            console.log("ERROR! Player is neither 1 nor 2!");
         }
 
-        $scope.changePhase = function(phase) {
+        $scope.goToPhase = function(phase) {
             var nextState = 'home.game.final';
-            if (phase < 3) {
+            if (phase < 2) {
                 nextState = 'home.game.interview';
             }
-            else if (phase < 5) {
+            else if (phase < 4) {
                 nextState = 'home.game.response';
             }
-            else if (phase < 7) {
+            else if (phase < 6) {
                 nextState = 'home.game.guess';
             }
             $scope.phase = phase;
             $state.go(nextState);
         };
 
+        $scope.goToPhase(game.phase);
+
+    }])
+
+    // Interview
+    .controller('interviewCtrl', [
+        '$scope',
+        '$stateParams', 
+        'games',
+        'game', 
+        function($scope, $stateParams, games, game){
+
+        $scope.N = [0, 1, 2, 3, 4];
+        $scope.questions = [];
+        $scope.submitted = false;
+
+        var savedQuestions = game['questions'+String($scope.playerNum)];
+
+        for (var i=0; i<savedQuestions.length; i++) {
+            $scope.questions[savedQuestions[i].questionNum] = savedQuestions[i].question;
+
+            // player has submitted questions already
+            $scope.submitted = true;
+        }
+
         $scope.submitQuestions = function() {
             $scope.submitted = true;
-            games.addQuestions($stateParams.id, $scope.questions);
-            $scope.changePhase($scope.phase+1);
+            questionReq = {
+                questions: $scope.questions,
+                playerNum: $scope.playerNum,
+                player: $scope.player
+            };
+            games.addQuestions($stateParams.id, questionReq, function(nextPhase) {
+                $scope.goToPhase(nextPhase);
+            });
         };
-
-        $scope.changePhase(game.phase);
 
     }])
