@@ -24,7 +24,6 @@ luna
                 url: '/{id}',
                 templateUrl: 'views/game.html',
                 controller: 'gameCtrl',
-                controllerAs: 'gctrl',
                 resolve: {
                     game: ['$stateParams', 'games', function($stateParams, games) {
                       return games.get($stateParams.id);

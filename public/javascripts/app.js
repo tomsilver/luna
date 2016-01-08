@@ -1,4 +1,6 @@
 var luna = angular.module('luna', [
+	'phaseFilters',
+	'colorFilters',
     'ngResource',
     'ui.router',
     'ui.bootstrap',
@@ -6,4 +8,3 @@ var luna = angular.module('luna', [
     'oc.lazyLoad',
     'nouislider'
  ])
- 

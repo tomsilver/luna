@@ -23,36 +23,14 @@
 
             <div class="listview lv-user m-t-20">
 
-                <div class="lv-item media active">
-                    <div class="lv-avatar bgm-red pull-left">a</div>
-                    <div class="media-body">
-                        <div class="lv-title"><strong>Your Turn</strong></div>
-                        <div class="lv-small">Response Phase</div>
-                    </div>
-                </div>
-
-                <div class="lv-item media">
-                    <div class="lv-avatar bgm-orange pull-left">m</div>
-                    <div class="media-body">
-                        <div class="lv-title">Their Turn</div>
-                        <div class="lv-small">Question Phase</div>
-                    </div>
-                </div>
-
-                <div class="lv-item media">
-                    <div class="lv-avatar bgm-cyan pull-left">s</div>
-                    <div class="media-body">
-                        <div class="lv-title"><strong>Your Turn</strong></div>
-                        <div class="lv-small">Guess Phase</div>
-                    </div>
-                </div>
-
-                <div class="lv-item media">
-                    <div class="lv-avatar bgm-purple pull-left">p</div>
-                    <div class="media-body">
-                        <div class="lv-title"><strong>Your Turn</strong></div>
-                        <div class="lv-small">Response Phase</div>
-                    </div>
+                <div class="lv-item media" ng-repeat="game in games  | orderBy: '-updateDate'" data-ui-sref-active="active">
+                    <a data-ui-sref="home.game({id: game._id})">
+                        <div class="lv-avatar bgm-{{ game.color | colorName }} pull-left">{{ game.initial }} </div>
+                        <div class="media-body">
+                            <div class="lv-title"><strong>{{ game.turn }}</strong></div>
+                            <div class="lv-small">{{ game.phase | phaseName }}</div>
+                        </div>
+                    </a>
                 </div>
             </div>
 

@@ -49,7 +49,7 @@ luna
             this.currentSkin = color;
         }
 
-        $scope.player = { _id: "568d621f237a26700ffe0379" };
+        $scope.player = { _id: "568c52ded4566fa60b760937" };
 
         // 568d621f237a26700ffe0379
         // 568c52ded4566fa60b760937
@@ -63,17 +63,28 @@ luna
 
     })
 
+
+    //=================================================
+    // Home
+    //=================================================
     .controller('homeCtrl', [
         '$scope',
         '$location',
         'games',
         function($scope, $location, games){
 
+        games.getAll(function() {
+            $scope.games = games.games;
+            $scope.$watch('games', function (newVal) {console.log("game updated");}, true);
+        });
+
+
         $scope.newGame = function() {
             games.create($scope.player, function(newGame) {
                 $location.path('/home/'+newGame._id);
             });
         };
+
     }])
 
 
@@ -112,21 +123,14 @@ luna
         'game', 
         function($scope, $state, $stateParams, games, game){
 
+        console.log(game);
+
+        $scope.gameColor = game.color;
+        $scope.gameInitial = game.initial;
+        $scope.turn = game.turn;
         $scope.N = [0, 1, 2, 3, 4];
 
         $scope.phase = game.phase;
-
-        if (game.player1 == $scope.player._id) {
-            $scope.playerNum = 1;
-            $scope.opNum = 2;
-        }
-        else if (game.player2 == $scope.player._id) {
-            $scope.playerNum = 2;
-            $scope.opNum = 1;
-        }
-        else {
-            console.log("ERROR! Player is neither 1 nor 2!");
-        }
 
         $scope.goToPhase = function(phase, callback) {
             var nextState = 'home.game.final';
@@ -159,7 +163,7 @@ luna
         $scope.questions = [];
         $scope.submitted = false;
 
-        var savedQuestions = game['questions'+String($scope.playerNum)];
+        var savedQuestions = game.questions;
 
         for (var i=0; i<savedQuestions.length; i++) {
             $scope.questions[savedQuestions[i].questionNum] = savedQuestions[i].question;
@@ -172,11 +176,10 @@ luna
             $scope.submitted = true;
             var questionReq = {
                 questions: $scope.questions,
-                playerNum: $scope.playerNum,
                 player: $scope.player
             };
-            games.addQuestions($stateParams.id, questionReq, function(nextPhase) {
-                $scope.goToPhase(nextPhase, function() {
+            games.addQuestions($stateParams.id, questionReq, function(data) {
+                $scope.goToPhase(data.phase, function() {
                     growlService.growl('Submitted questions!', 'inverse');
                 });
             });
@@ -193,8 +196,8 @@ luna
         'game', 
         function($scope, $stateParams, growlService, games, game){
 
-        var opQuestions = game['questions'+String($scope.opNum)];
-        var savedResponses = game['responses'+String($scope.playerNum)];
+        var opQuestions = game.opQuestions;
+        var savedResponses = game.responses;
 
         $scope.questions = [];
         $scope.responses = [];
@@ -217,11 +220,10 @@ luna
                 $scope.submitted = true;
                 var responseReq = {
                     responses: $scope.responses,
-                    playerNum: $scope.playerNum,
                     player: $scope.player
                 };
-                games.addResponses($stateParams.id, responseReq, function(nextPhase) {
-                    $scope.goToPhase(nextPhase, function() {
+                games.addResponses($stateParams.id, responseReq, function(data) {
+                    $scope.goToPhase(data.phase, function() {
                         growlService.growl('Submitted responses!', 'inverse');
                     });
                 });
@@ -240,9 +242,9 @@ luna
         'game', 
         function($scope, $stateParams, growlService, games, game){
 
-        var myQuestions = game['questions'+String($scope.playerNum)];
-        var opResponses = game['responses'+String($scope.opNum)];
-        var savedGuess = game['guess'+String($scope.playerNum)];
+        var myQuestions = game.questions;
+        var opResponses = game.opResponses;
+        var savedGuess = game.guess;
 
         $scope.questions = [];
         $scope.responses = [];
@@ -269,11 +271,10 @@ luna
                 $scope.submitted = true;
                 var guessReq = {
                     guess: $scope.guess,
-                    playerNum: $scope.playerNum,
                     player: $scope.player
                 };
-                games.addGuess($stateParams.id, guessReq, function(nextPhase) {
-                    $scope.goToPhase(nextPhase, function() {
+                games.addGuess($stateParams.id, guessReq, function(data) {
+                    $scope.goToPhase(data.phase, function() {
                         growlService.growl('Submitted guess!', 'inverse');
                     });
                 });
@@ -291,8 +292,8 @@ luna
         function($scope, $stateParams, game){
 
         if ($scope.phase == 6) {
-            $scope.opGuess = game['guess'+String($scope.opNum)];
-            $scope.myGuess = game['guess'+String($scope.playerNum)];
+            $scope.opGuess = game.guess;
+            $scope.myGuess = game.opGuess;
         }
 
     }])

@@ -63,13 +63,33 @@ luna
 
     .factory('games', ['$http', function($http){
       var o = {
-        games: [],
-        myQuestions: [],
-        opQuestions: [],
-        myResponses: [],
-        opResponses: [],
-        myGuess: null,
-        opGuess: null
+        games: []
+      };
+
+      o.updateGame = function(id, game, callback) {
+        var savedGame = false;
+
+        for (var i=0; i<o.games.length; i++) {
+          if (o.games[i]._id == id) {
+            savedGame = o.games[i];
+            break;
+          }
+        }
+
+        if (!savedGame)
+          console.log("Error: saved game not found");
+
+        o.games[i] = game;
+
+        callback(game);
+
+      };
+
+      o.getAll = function(callback) {
+        return $http.get('/home').success(function(data){
+          o.games = data;
+          callback();
+        });
       };
 
       o.create = function(player, callback) {
@@ -86,23 +106,20 @@ luna
       };
 
       o.addQuestions = function(id, questions, callback) {
-        return $http.post('/home/'+ id +'/interview', questions).success(function(data){
-          o.myQuestions = data.questions;
-          callback(data.nextPhase);
+        return $http.post('/home/'+ id +'/interview', questions).success(function(game){
+          o.updateGame(id, game, callback);
         });
       };
 
       o.addResponses = function(id, responses, callback) {
-        return $http.post('/home/'+ id +'/response', responses).success(function(data){
-          o.myResponses = data.responses;
-          callback(data.nextPhase);
+        return $http.post('/home/'+ id +'/response', responses).success(function(game){
+          o.updateGame(id, game, callback);
         });
       };
 
       o.addGuess = function(id, guess, callback) {
-        return $http.post('/home/'+ id +'/guess', guess).success(function(data){
-          o.myGuess = data.guess;
-          callback(data.nextPhase);
+        return $http.post('/home/'+ id +'/guess', guess).success(function(game){
+          o.updateGame(id, data, callback);
         });
       };
 
