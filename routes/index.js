@@ -187,6 +187,33 @@ router.post('/home/:game/response', function(req, res, next) {
   saveResponses();
 });
 
+/* guess */
+router.post('/home/:game/guess', function(req, res, next) {
+  var player = req.body.player;
+  var playerNum = req.body.playerNum;
+  var guess = req.body.guess;
+
+  var saveGame = function() {
+  	req.game['guess'+String(playerNum)] = guess;
+  	req.game.save(function(err, game) {
+	  if(err){ return next(err); }
+	  // To avoid race condition, atomically update phase
+	  Game.findByIdAndUpdate(
+		req.game._id,
+		{ $inc: { phase : 1} },
+		{ new: true }, function(err, game) {
+		res.json({
+			guess: guess,
+			nextPhase: game.phase
+		});
+	  });
+
+	}); 
+  };
+
+  saveGame();
+});
+
 
 /* profile routes */
 router.post('/profile', function(req, res, next) {

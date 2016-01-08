@@ -99,6 +99,13 @@ luna
         });
       };
 
+      o.addGuess = function(id, guess, callback) {
+        return $http.post('/home/'+ id +'/guess', guess).success(function(data){
+          o.myGuess = data.guess;
+          callback(data.nextPhase);
+        });
+      };
+
       return o;
     }])
 

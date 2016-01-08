@@ -5,7 +5,7 @@ luna
 
     .controller('lunaCtrl', function($timeout, $state, $scope, growlService){
         //Welcome Message
-        growlService.growl('Welcome back Tom!', 'inverse')
+        growlService.growl('Welcome back Tom!', 'inverse');
         
         // Detect Mobile Browser
         if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
@@ -49,7 +49,7 @@ luna
             this.currentSkin = color;
         }
 
-        $scope.player = { _id: "568c52ded4566fa60b760937" };
+        $scope.player = { _id: "568d621f237a26700ffe0379" };
 
         // 568d621f237a26700ffe0379
         // 568c52ded4566fa60b760937
@@ -128,7 +128,7 @@ luna
             console.log("ERROR! Player is neither 1 nor 2!");
         }
 
-        $scope.goToPhase = function(phase) {
+        $scope.goToPhase = function(phase, callback) {
             var nextState = 'home.game.final';
             if (phase < 2) {
                 nextState = 'home.game.interview';
@@ -140,7 +140,7 @@ luna
                 nextState = 'home.game.guess';
             }
             $scope.phase = phase;
-            $state.go(nextState);
+            $state.go(nextState).then(callback);
         };
 
         $scope.goToPhase(game.phase);
@@ -150,10 +150,11 @@ luna
     // Interview
     .controller('interviewCtrl', [
         '$scope',
-        '$stateParams', 
+        '$stateParams',
+        'growlService', 
         'games',
         'game', 
-        function($scope, $stateParams, games, game){
+        function($scope, $stateParams, growlService, games, game){
 
         $scope.questions = [];
         $scope.submitted = false;
@@ -175,7 +176,9 @@ luna
                 player: $scope.player
             };
             games.addQuestions($stateParams.id, questionReq, function(nextPhase) {
-                $scope.goToPhase(nextPhase);
+                $scope.goToPhase(nextPhase, function() {
+                    growlService.growl('Submitted questions!', 'inverse');
+                });
             });
         };
 
@@ -184,10 +187,11 @@ luna
     // Response
     .controller('responseCtrl', [
         '$scope',
-        '$stateParams', 
+        '$stateParams',
+        'growlService', 
         'games',
         'game', 
-        function($scope, $stateParams, games, game){
+        function($scope, $stateParams, growlService, games, game){
 
         var opQuestions = game['questions'+String($scope.opNum)];
         var savedResponses = game['responses'+String($scope.playerNum)];
@@ -217,7 +221,61 @@ luna
                     player: $scope.player
                 };
                 games.addResponses($stateParams.id, responseReq, function(nextPhase) {
-                    $scope.goToPhase(nextPhase);
+                    $scope.goToPhase(nextPhase, function() {
+                        growlService.growl('Submitted responses!', 'inverse');
+                    });
+                });
+            };
+
+        }
+
+    }])
+
+    // Guess
+    .controller('guessCtrl', [
+        '$scope',
+        '$stateParams',
+        'growlService', 
+        'games',
+        'game', 
+        function($scope, $stateParams, growlService, games, game){
+
+        var myQuestions = game['questions'+String($scope.playerNum)];
+        var opResponses = game['responses'+String($scope.opNum)];
+        var savedGuess = game['guess'+String($scope.playerNum)];
+
+        $scope.questions = [];
+        $scope.responses = [];
+        $scope.submitted = false;
+
+        if ($scope.phase > 3) {
+
+            for (var i=0; i<myQuestions.length; i++) {
+                $scope.questions[myQuestions[i].questionNum] = myQuestions[i].question;
+            }
+
+            for (var i=0; i<opResponses.length; i++) {
+                $scope.responses[opResponses[i].questionNum] = opResponses[i].response;
+            }
+
+            if (savedGuess != null) {
+                $scope.guess = savedGuess;
+
+                // player has submitted a guess already
+                $scope.submitted = true;
+            }
+
+            $scope.submitGuess = function() {
+                $scope.submitted = true;
+                var guessReq = {
+                    guess: $scope.guess,
+                    playerNum: $scope.playerNum,
+                    player: $scope.player
+                };
+                games.addGuess($stateParams.id, guessReq, function(nextPhase) {
+                    $scope.goToPhase(nextPhase, function() {
+                        growlService.growl('Submitted guess!', 'inverse');
+                    });
                 });
             };
 

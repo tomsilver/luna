@@ -49,7 +49,8 @@ luna
             //Guess
             .state('home.game.guess', {
                 url: '/guess',
-                templateUrl: 'views/guess.html'
+                templateUrl: 'views/guess.html',
+                controller: 'guessCtrl'
             })
 
             //Final

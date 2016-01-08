@@ -1,20 +1,35 @@
 <div class="card">
     <div class="card-header">
-        <h2>Guess Phase<small>Your opponent has answered your questions! You are now in the Guess Phase of the Luna Game, which is the final phase. Below are your opponent’s answers.
+        <h2>Guess Phase<small ng-show="responses.length">Your opponent has answered your questions! You are now in the Guess Phase of the Luna Game, which is the final phase. Below are your opponent’s answers.
 </small></h2>
     </div>
 
     <div class="card-body card-padding">
-        <div class="form-group fg-line" ng-repeat="n in [1, 2, 3, 4, 5]">
-            <label for="response{{n}}">What is the third prime number?</label>
-            <div id="response{{n}}">5</div>
-        </div>
-        <form role="form">
-            <div class="form-group fg-line">
-	                <label for="guess">Based on these answers, please enter a guess of your opponent’s Smarts Rating.</label>
-	                <input type="text" class="form-control input-lg" id="guess" placeholder="Enter guess">
-	            </div>
-            <button type="submit" class="btn btn-primary btn-sm m-t-10" ng-click="changePhase(phase+1)">Submit</button>
-        </form>
+    	<small ng-show="!responses.length">
+            The Response Phase is not yet complete.
+        </small>
+        <div ng-show="responses.length">
+	        <div class="form-group fg-line" ng-repeat="n in N">
+	            <label for="response{{n}}">{{ questions[n] }}</label>
+	            <div id="response{{n}}">{{ responses[n] }}</div>
+	        </div>
+	        <form role="form" ng-submit="submitGuess()">
+	            <div class="form-group fg-line">
+		                <label for="guess">Based on these answers, please enter a guess of your opponent’s Smarts Rating.</label>
+		                <input type="text" class="form-control input-lg" ng-model="guess" placeholder="Enter guess" ng-readonly="submitted">
+		            </div>
+	        <div ng-show="!submitted">
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-sm m-t-10">Submit</button>
+                </div>
+            </div>
+            <div ng-show="phase == 5">
+                <h2><small>Waiting for opponent's guess...</small></h2>
+            </div>
+            <div ng-show="phase > 5">
+                <h2><small>The Guess Phase is complete. Click on Result to view the result of the game.</small></h2>
+            </div>
+	        </form>
+	    </div>
     </div>
 </div>
