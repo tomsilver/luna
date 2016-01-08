@@ -36,27 +36,48 @@ luna
             .state('home.game.interview', {
                 url: '/interview',
                 templateUrl: 'views/interview.html',
-                controller: 'interviewCtrl'
+                controller: 'interviewCtrl',
+                resolve: {
+                    game: ['$stateParams', 'games', function($stateParams, games) {
+                      return games.get($stateParams.id);
+                    }]
+                  }
             })
 
             //Response
             .state('home.game.response', {
                 url: '/response',
                 templateUrl: 'views/response.html',
-                controller: 'responseCtrl'
+                controller: 'responseCtrl',
+                resolve: {
+                    game: ['$stateParams', 'games', function($stateParams, games) {
+                      return games.get($stateParams.id);
+                    }]
+                  }
             })
 
             //Guess
             .state('home.game.guess', {
                 url: '/guess',
                 templateUrl: 'views/guess.html',
-                controller: 'guessCtrl'
+                controller: 'guessCtrl',
+                resolve: {
+                    game: ['$stateParams', 'games', function($stateParams, games) {
+                      return games.get($stateParams.id);
+                    }]
+                  }
             })
 
             //Final
             .state('home.game.final', {
                 url: '/final',
-                templateUrl: 'views/final.html'
+                templateUrl: 'views/final.html',
+                controller: 'finalCtrl',
+                resolve: {
+                    game: ['$stateParams', 'games', function($stateParams, games) {
+                      return games.get($stateParams.id);
+                    }]
+                  }
             })
             
         

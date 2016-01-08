@@ -282,3 +282,17 @@ luna
         }
 
     }])
+
+    // Final
+    .controller('finalCtrl', [
+        '$scope',
+        '$stateParams',
+        'game', 
+        function($scope, $stateParams, game){
+
+        if ($scope.phase == 6) {
+            $scope.opGuess = game['guess'+String($scope.opNum)];
+            $scope.myGuess = game['guess'+String($scope.playerNum)];
+        }
+
+    }])
