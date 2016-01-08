@@ -92,6 +92,13 @@ luna
         });
       };
 
+      o.addResponses = function(id, responses, callback) {
+        return $http.post('/home/'+ id +'/response', responses).success(function(data){
+          o.myResponses = data.responses;
+          callback(data.nextPhase);
+        });
+      };
+
       return o;
     }])
 

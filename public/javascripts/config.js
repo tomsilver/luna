@@ -42,7 +42,8 @@ luna
             //Response
             .state('home.game.response', {
                 url: '/response',
-                templateUrl: 'views/response.html'
+                templateUrl: 'views/response.html',
+                controller: 'responseCtrl'
             })
 
             //Guess

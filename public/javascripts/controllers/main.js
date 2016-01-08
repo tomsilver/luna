@@ -49,7 +49,7 @@ luna
             this.currentSkin = color;
         }
 
-        $scope.player = { _id: "568d621f237a26700ffe0379" };
+        $scope.player = { _id: "568c52ded4566fa60b760937" };
 
         // 568d621f237a26700ffe0379
         // 568c52ded4566fa60b760937
@@ -112,13 +112,17 @@ luna
         'game', 
         function($scope, $state, $stateParams, games, game){
 
+        $scope.N = [0, 1, 2, 3, 4];
+
         $scope.phase = game.phase;
 
         if (game.player1 == $scope.player._id) {
             $scope.playerNum = 1;
+            $scope.opNum = 2;
         }
         else if (game.player2 == $scope.player._id) {
             $scope.playerNum = 2;
+            $scope.opNum = 1;
         }
         else {
             console.log("ERROR! Player is neither 1 nor 2!");
@@ -151,7 +155,6 @@ luna
         'game', 
         function($scope, $stateParams, games, game){
 
-        $scope.N = [0, 1, 2, 3, 4];
         $scope.questions = [];
         $scope.submitted = false;
 
@@ -166,7 +169,7 @@ luna
 
         $scope.submitQuestions = function() {
             $scope.submitted = true;
-            questionReq = {
+            var questionReq = {
                 questions: $scope.questions,
                 playerNum: $scope.playerNum,
                 player: $scope.player
@@ -175,5 +178,49 @@ luna
                 $scope.goToPhase(nextPhase);
             });
         };
+
+    }])
+
+    // Response
+    .controller('responseCtrl', [
+        '$scope',
+        '$stateParams', 
+        'games',
+        'game', 
+        function($scope, $stateParams, games, game){
+
+        var opQuestions = game['questions'+String($scope.opNum)];
+        var savedResponses = game['responses'+String($scope.playerNum)];
+
+        $scope.questions = [];
+        $scope.responses = [];
+        $scope.submitted = false;
+
+        if ($scope.phase > 1) {
+
+            for (var i=0; i<opQuestions.length; i++) {
+                $scope.questions[opQuestions[i].questionNum] = opQuestions[i].question;
+            }
+
+            for (var i=0; i<savedResponses.length; i++) {
+                $scope.responses[savedResponses[i].questionNum] = savedResponses[i].response;
+
+                // player has submitted responses already
+                $scope.submitted = true;
+            }
+
+            $scope.submitResponses = function() {
+                $scope.submitted = true;
+                var responseReq = {
+                    responses: $scope.responses,
+                    playerNum: $scope.playerNum,
+                    player: $scope.player
+                };
+                games.addResponses($stateParams.id, responseReq, function(nextPhase) {
+                    $scope.goToPhase(nextPhase);
+                });
+            };
+
+        }
 
     }])

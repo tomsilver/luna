@@ -67,13 +67,16 @@ router.param('game', function(req, res, next, id) {
 router.get('/home/:game', function(req, res) {
     req.game
    	  .populate('questions1')
-   	  .populate('questions2', function(err, game) {
+   	  .populate('questions2')
+   	  .populate('responses1')
+   	  .populate('responses2', function(err, game) {
     	if (err) { return next(err); }
 
     	res.json(req.game);
   	});
 });
 
+/* interview */
 router.post('/home/:game/interview', function(req, res, next) {
   var player = req.body.player;
   var playerNum = req.body.playerNum;
@@ -127,6 +130,63 @@ router.post('/home/:game/interview', function(req, res, next) {
 
   saveQuestions();
 });
+
+
+/* response */
+router.post('/home/:game/response', function(req, res, next) {
+  var player = req.body.player;
+  var playerNum = req.body.playerNum;
+  var responseInputs = req.body.responses;
+  var responses = [];
+  var i = 0;
+
+  var saveGame = function() {
+  	req.game['responses'+String(playerNum)] = responses;
+  	req.game.save(function(err, game) {
+	  if(err){ return next(err); }
+	  // To avoid race condition, atomically update phase
+	  Game.findByIdAndUpdate(
+		req.game._id,
+		{ $inc: { phase : 1} },
+		{ new: true }, function(err, game) {
+		res.json({
+			responses: responses,
+			nextPhase: game.phase
+		});
+	  });
+
+	}); 
+  };
+
+  var saveResponses = function() {
+  	var response;
+  	var responseInput;
+  	
+  	if (responseInputs.length == 0)
+  		saveGame();
+  	else {
+  		var nextResponse = responseInputs.shift();
+	  	
+	  	responseInput = {
+	  		player: player,
+	  		questionNum: i,
+	  		response: nextResponse
+	  	}
+
+	  	response = new Response(responseInput);
+
+	  	response.save(function(err, response){
+	    	if(err){ return next(err); }
+			responses.push(response);
+			i++;
+	  		saveResponses();	
+	  	});
+  	}
+  }
+
+  saveResponses();
+});
+
 
 /* profile routes */
 router.post('/profile', function(req, res, next) {
