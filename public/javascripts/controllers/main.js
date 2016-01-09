@@ -49,7 +49,7 @@ luna
             this.currentSkin = color;
         }
 
-        $scope.player = { _id: "568c52ded4566fa60b760937" };
+        $scope.player = { _id: "568d621f237a26700ffe0379" };
 
         // 568d621f237a26700ffe0379
         // 568c52ded4566fa60b760937
@@ -290,8 +290,8 @@ luna
         function($scope, $stateParams, game){
 
         if ($scope.phase == 6) {
-            $scope.opGuess = game.guess;
-            $scope.myGuess = game.opGuess;
+            $scope.myGuess = game.guess;
+            $scope.opGuess = game.opGuess;
         }
 
     }])

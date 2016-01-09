@@ -119,7 +119,7 @@ luna
 
       o.addGuess = function(id, guess, callback) {
         return $http.post('/home/'+ id +'/guess', guess).success(function(game){
-          o.updateGame(id, data, callback);
+          o.updateGame(id, game, callback);
         });
       };
 

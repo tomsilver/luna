@@ -15,7 +15,8 @@ var Response = mongoose.model('Response');
 var Game = mongoose.model('Game');
 
 /* figure out how to handle this with get /home.. */
-var player = { _id: "568c52ded4566fa60b760937" };
+var player = { _id: "568d621f237a26700ffe0379" };
+
 var playerNum = function(game) {
     if (game.player1 == player._id) {
         return 1;
@@ -71,7 +72,7 @@ var individualizeGame = function(game, callback) {
 	var phase = game.phase;
 	var opQuestions = [];
 	var questions = game['questions'+String(pNum)];
-	var responses = game['responses'+String(oNum)];
+	var responses = game['responses'+String(pNum)];
 	var opResponses = [];
 	var guess = game['guess'+String(pNum)];
 	var opGuess = null;
