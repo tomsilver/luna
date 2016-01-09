@@ -18,7 +18,7 @@ var Question = mongoose.model('Question');
 var Response = mongoose.model('Response');
 var Game = mongoose.model('Game');
 
-/* players */
+/* register a new player */
 router.post('/register', function(req, res, next){
   if(!req.body.username || !req.body.password){
     return res.status(400).json({message: 'Please fill out all fields'});
@@ -35,6 +35,7 @@ router.post('/register', function(req, res, next){
   });
 });
 
+/* login existing player */
 router.post('/login', function(req, res, next){
   if(!req.body.username || !req.body.password){
     return res.status(400).json({message: 'Please fill out all fields'});
@@ -51,6 +52,7 @@ router.post('/login', function(req, res, next){
   })(req, res, next);
 });
 
+/* get player from mongodb according to username */
 var playerFromRequest = function(req, callback) {
 	Player.find({ username: req.payload.username }, function(err, player) {
 	    if (err) { return next(err); }
@@ -60,6 +62,7 @@ var playerFromRequest = function(req, callback) {
 	});
 };
 
+/* get player number in game */
 var playerNum = function(player, game) {
     if (String(game.player1) == String(player._id)) {
         return 1;
@@ -78,41 +81,45 @@ var playerNum = function(player, game) {
 
 };
 
+/* make sure player is in game (not currently used) */
 var checkMyGame = function(player, game) {
 	return playerNum(player, game) > 0;
 };
 
+/* determine whether the player is waiting or not */
+/* 0 = waiting, 1 = your turn, 2 = complete */
 var getTurn = function(game, pNum) {
 	if (game.phase == 1) {
         if ((pNum == 1) && (!game.questions2.length)) {
-            return "Waiting";
+            return 0;
         }
         if ((pNum == 2) && (!game.questions1.length)) {
-            return "Waiting";
+            return 0;
         }
     }
     if (game.phase == 3) {
         if ((pNum == 1) && (!game.responses2.length)) {
-            return "Waiting";
+            return 0;
         }
         if ((pNum == 2) && (!game.responses1.length)) {
-            return "Waiting";
+            return 0;
         }
     }
     if (game.phase == 5) {
         if ((pNum == 1) && (game.guess2 == null)) {
-            return "Waiting";
+            return 0;
         }
         if ((pNum == 2) && (game.guess1 == null)) {
-            return "Waiting";
+            return 0;
         }
     }
     if (game.phase == 6)
-        return "Game Complete";
-    return "Your Turn";
+        return 2;
+    return 1;
 };
 
 /* convert full game to player view of game */
+/* ensures that players cannot prematurely view opponent data */
 var individualizeGame = function(player, game, callback) {
 	var pNum = playerNum(player, game);
 	var oNum = (pNum == 2) ? 1 : 2;
@@ -158,14 +165,13 @@ var individualizeGame = function(player, game, callback) {
 	};
 
 	callback(o);
-
-	return o;
 };
 
 
 /* game routes */
 /* new game */
 router.post('/home', auth, function(req, res, next) {
+	/* random opponent identifiers */
 	var letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'v', 'w', 'z'];
 	var colors = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 	var myInitial = letters[Math.floor(Math.random()*letters.length)];

@@ -13,6 +13,18 @@ angular.module('phaseFilters', []).filter('phaseName', function() {
   };
 });
 
+angular.module('turnFilters', []).filter('turnMessage', function() {
+  return function(turnNum) {
+    if (turnNum == 1) {
+        return 'Your Turn';
+    }
+    if (turnNum == 0) {
+        return 'Waiting';
+    }
+    return 'Game Complete';
+  };
+});
+
 angular.module('colorFilters', []).filter('colorName', function() {
   return function(colorNum) {
   	var color;

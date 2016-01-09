@@ -27,7 +27,7 @@
                     <a data-ui-sref="home.game({id: game._id})">
                         <div class="lv-avatar bgm-{{ game.color | colorName }} pull-left">{{ game.initial }} </div>
                         <div class="media-body">
-                            <div class="lv-title"><strong>{{ game.turn }}</strong></div>
+                            <div ng-class="(game.turn) ? 'lv-emph' : 'lv-title'">{{ game.turn | turnMessage }}</div>
                             <div class="lv-small">{{ game.phase | phaseName }}</div>
                         </div>
                     </a>
