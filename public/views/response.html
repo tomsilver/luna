@@ -5,25 +5,28 @@
     </div>
 
     <div class="card-body card-padding">
-        <small ng-show="!questions.length">
+        <small ng-show="!questions.length && active">
             The Interview Phase is not yet complete.
         </small>
         <form role="form" ng-show="questions.length" ng-submit="submitResponses()">
             <div class="form-group fg-line" ng-repeat="n in N">
                 <label for="responses{{ n }}" class="control-label">{{ questions[n] }}</label>
-                <input type="text" class="form-control input-sm" ng-model="responses[n]" placeholder="Response {{ n+1 }}" ng-readonly="submitted">
+                <input type="text" class="form-control input-sm" ng-model="responses[n]" placeholder="Response {{ n+1 }}" ng-readonly="submitted || !active">
             </div>
-            <div ng-show="!submitted">
+            <div ng-show="!submitted && active">
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary btn-sm m-t-10">Submit</button>
                 </div>
             </div>
-            <div ng-show="phase == 3">
+            <div ng-show="phase == 3 && active">
                 <h2><small>Waiting for opponent's responses...</small></h2>
             </div>
-            <div ng-show="phase > 3">
+            <div ng-show="phase > 3 && active">
                 <h2><small>The Response Phase is complete. Click on Guess to view the next phase.</small></h2>
             </div>
         </form>
+        <small ng-show="!active">
+            This game has been deactivated. This occurs when all phases are completed, a player resigns or a game times out.
+        </small>
     </div>
 </div>

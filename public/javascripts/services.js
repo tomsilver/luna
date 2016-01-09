@@ -63,15 +63,18 @@ luna
 
     .factory('games', ['$http', 'auth', function($http, auth){
       var o = {
-        games: []
+        currentGames: [],
+        pastGames: [],
+        current: true
       };
 
       o.updateGame = function(id, game, callback) {
-        var savedGame = false;
+        var savedGame;
+        var theseGames = (o.current) ? o.currentGames : o.pastGames;
 
-        for (var i=0; i<o.games.length; i++) {
-          if (o.games[i]._id == id) {
-            savedGame = o.games[i];
+        for (var i=0; i<theseGames.length; i++) {
+          if (theseGames[i]._id == id) {
+            savedGame = theseGames[i];
             break;
           }
         }
@@ -79,9 +82,29 @@ luna
         if (!savedGame)
           console.log("Error: saved game not found");
 
-        o.games[i] = game;
+        theseGames[i] = game;
 
         callback(game);
+
+      };
+
+      /* move a game from current to past */
+      o.retireGame = function(id, game, callback) {
+        var savedGameIdx;
+
+        for (var i=0; i<o.currentGames.length; i++) {
+          if (o.currentGames[i]._id == id) {
+            savedGameIdx = i;
+            break;
+          }
+        }
+
+        if (savedGameIdx) {
+          o.currentGames.splice(savedGameIdx, 1);
+          o.pastGames.unshift(game);
+        }
+
+        callback();
 
       };
 
@@ -89,7 +112,30 @@ luna
         return $http.get('/home', {
           headers: {Authorization: 'Bearer '+auth.getToken()}
         }).success(function(data){
-          o.games = data;
+          callback(data);
+        });
+      };
+
+      o.getCurrentGames = function(callback) {
+        o.current = true;
+        o.currentGames = [];
+        o.getAll(function(games) {
+          for (var i=0; i<games.length; i++) {
+            if (games[i].active)
+              o.currentGames.push(games[i]);
+          }
+          callback();
+        });
+      };
+
+      o.getPastGames = function(callback) {
+        o.current = false;
+        o.pastGames = [];
+        o.getAll(function(games) {
+          for (var i=0; i<games.length; i++) {
+            if (!games[i].active)
+              o.pastGames.push(games[i]);
+          }
           callback();
         });
       };
@@ -98,7 +144,7 @@ luna
         return $http.post('/home', player, {
           headers: {Authorization: 'Bearer '+auth.getToken()}
         }).success(function(data){
-          o.games.push(data);
+          o.currentGames.push(data);
           callback(data);
         });
       };
@@ -135,8 +181,21 @@ luna
         });
       };
 
+      o.deactivate = function(id, callback) {
+        return $http.get('/home/' + id + '/deactivate', {
+          headers: {Authorization: 'Bearer '+auth.getToken()}
+        }).success(function(game){
+          o.retireGame(id, game, callback);
+        });
+      }
+
       return o;
     }])
+
+
+    //==============================================
+    // Auth
+    //==============================================
 
     .factory('auth', ['$http', '$window', '$state', function($http, $window, $state){
       var auth = {};

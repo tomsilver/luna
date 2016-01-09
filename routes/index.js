@@ -113,7 +113,7 @@ var getTurn = function(game, pNum) {
             return 0;
         }
     }
-    if (game.phase == 6)
+    if (game.phase >= 6)
         return 2;
     return 1;
 };
@@ -137,6 +137,7 @@ var individualizeGame = function(player, game, callback) {
 	var turn = getTurn(game, pNum);
 	var _id = game._id;
 	var updateDate = game.updateDate;
+	var active = game['active'+String(pNum)];
 
 
 	if (phase > 1) {
@@ -161,7 +162,8 @@ var individualizeGame = function(player, game, callback) {
 		initial: initial,
 		turn: turn,
 		phase: phase,
-		updateDate: updateDate
+		updateDate: updateDate,
+		active: active
 	};
 
 	callback(o);
@@ -267,6 +269,25 @@ router.get('/home/:game', auth, function(req, res) {
 				res.json(indvGame);
 			});
 	  	});
+  });
+});
+
+/* deactivate */
+router.get('/home/:game/deactivate', auth, function(req, res) {
+	playerFromRequest(req, function(player) {
+  	  req.game['active'+String(playerNum(player, req.game))] = false;
+	  req.game.save(function(err, game) {
+	  if(err){ return next(err); }
+	  // To avoid race condition, atomically update phase
+	  Game.findByIdAndUpdate(
+		req.game._id,
+		{ $inc: { phase : 1} },
+		{ new: true }, function(err, game) {
+		individualizeGame(player, game, function(indvGame) {
+			res.json(indvGame);
+		});
+	  });
+	});
   });
 });
 

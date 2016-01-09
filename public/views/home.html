@@ -1,8 +1,4 @@
 <div class="container">
-    <div class="block-header">
-        <h2>Luna Games</h2>
-    </div>
-
     <div class="card m-b-0" id="messages-main">
 
         <div class="ms-menu" data-ng-class="{ 'toggled': lunaCtrl.lvMenuStat }">
@@ -11,11 +7,11 @@
             </div>
             <div class="ms-block">
                 <div class="dropdown" uib-dropdown>
-                    <a class="btn btn-primary btn-block bgm-bluegray" href="" uib-dropdown-toggle>Current Games <i class="caret m-l-5"></i></a>
+                    <a class="btn btn-primary btn-block bgm-bluegray" href="" uib-dropdown-toggle>{{ currentOrPast }} Games <i class="caret m-l-5"></i></a>
 
                     <ul class="dropdown-menu dm-icon w-100">
-                        <li><a href="">Current Games</a></li>
-                        <li><a href="">Past Games</a></li>
+                        <li><a href="" ng-click="getCurrentGames()">Current Games</a></li>
+                        <li><a href="" ng-click="getPastGames()">Past Games</a></li>
 
                     </ul>
                 </div>
@@ -24,10 +20,11 @@
             <div class="listview lv-user m-t-20">
 
                 <div class="lv-item media" ng-repeat="game in games  | orderBy: '-updateDate'" data-ui-sref-active="active">
-                    <a data-ui-sref="home.game({id: game._id})">
+                    <a data-ui-sref="home.game({id: game._id})"  ui-sref-opts="{reload: 'home.game'}">
                         <div class="lv-avatar bgm-{{ game.color | colorName }} pull-left">{{ game.initial }} </div>
                         <div class="media-body">
-                            <div ng-class="(game.turn) ? 'lv-emph' : 'lv-title'">{{ game.turn | turnMessage }}</div>
+                            <div ng-class="(game.turn) ? 'lv-emph' : 'lv-title'" ng-show="game.active">{{ game.turn | turnMessage }}</div>
+                            <div class="lv-title" ng-show"!game.active">Game Complete</div>
                             <div class="lv-small">{{ game.phase | phaseName }}</div>
                         </div>
                     </a>

@@ -39,7 +39,6 @@
         <header id="header" data-current-skin={{lunaCtrl.currentSkin}} data-ng-include src="'template/header.html'" data-ng-controller="headerCtrl as hctrl"></header>
 
         <section id="main">
-            <aside id="sidebar" data-ng-include src="'/template/sidebar-left.html'" data-ng-class="{ 'toggled': lunaCtrl.sidebarToggle.left === true }"></aside>
             
             <section id="content" class="page-view" data-ui-view></section>
 
@@ -118,9 +117,7 @@
         <script src="/vendors/bower_components/flot.curvedlines/curvedLines.js"></script>
         <script src="/vendors/bower_components/flot/jquery.flot.resize.js"></script>
         <script src="/vendors/bower_components/moment/min/moment.min.js"></script>
-        <script src="/vendors/bower_components/flot-orderBars//javascripts/jquery.flot.orderBars.js"></script>
         <script src="/vendors/bower_components/flot/jquery.flot.pie.js"></script>
-        <script src="/vendors/bower_components/flot.tooltip//javascripts/jquery.flot.tooltip.min.js"></script>
         <script src="/vendors/bower_components/angular-nouislider/src/nouislider.min.js"></script>
         
         

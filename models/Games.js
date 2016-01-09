@@ -15,7 +15,9 @@ var GameSchema = new mongoose.Schema({
   guess1: Number,
   guess2: Number,
   outcome: { type: Number, default: 0 },
-  updateDate: { type : Date, default: Date.now }
+  updateDate: { type : Date, default: Date.now },
+  active1: {type: Boolean, default: true },
+  active2: {type: Boolean, default: true }
 });
 
 mongoose.model('Game', GameSchema);

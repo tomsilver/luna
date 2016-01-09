@@ -75,16 +75,30 @@ luna
         'games',
         function($scope, $location, games){
 
-        games.getAll(function() {
-            $scope.games = games.games;
-            $scope.$watch('games', function (newVal) {console.log("game updated");}, true);
-        });
+        $scope.currentOrPast = 'Current';
+
+        $scope.getCurrentGames = function() {
+            games.getCurrentGames(function() {
+                $scope.games = games.currentGames;
+                $scope.currentOrPast = 'Current';
+            });
+        };
+
+        $scope.getPastGames = function() {
+            games.getPastGames(function() {
+                $scope.games = games.pastGames;
+                $scope.currentOrPast = 'Past';
+            });
+        };
 
         $scope.newGame = function() {
             games.create($scope.player, function(newGame) {
                 $location.path('/home/'+newGame._id);
+                $scope.getCurrentGames();
             });
         };
+
+        $scope.getCurrentGames();
 
     }])
 
@@ -154,8 +168,9 @@ luna
         $scope.gameInitial = game.initial;
         $scope.turn = game.turn;
         $scope.N = [0, 1, 2, 3, 4];
+        $scope.active = game.active;
 
-        $scope.phase = game.phase;
+        $scope.phase = ($scope.active) ? game.phase : 7;
 
         $scope.goToPhase = function(phase, callback) {
             var nextState = 'home.game.final';
@@ -172,7 +187,11 @@ luna
             $state.go(nextState).then(callback);
         };
 
-        $scope.goToPhase(game.phase);
+        $scope.deactivateGame = function() {
+            games.deactivate($stateParams.id, $scope.getPastGames);
+        };
+
+        $scope.goToPhase($scope.phase);
 
     }])
 
@@ -313,12 +332,19 @@ luna
     .controller('finalCtrl', [
         '$scope',
         '$stateParams',
+        'games',
         'game', 
-        function($scope, $stateParams, game){
+        function($scope, $stateParams, games, game){
 
-        if ($scope.phase == 6) {
+        $scope.myGuess = 'None';
+        $scope.opGuess = 'None';
+
+        if ($scope.phase >= 6) {
             $scope.myGuess = game.guess;
             $scope.opGuess = game.opGuess;
+
+            if (games.current)
+                games.deactivate($stateParams.id);
         }
 
     }])

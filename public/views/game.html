@@ -12,7 +12,8 @@
             <div class="lv-avatar pull-left">
                 <div class="lv-avatar bgm-{{ gameColor | colorName }} pull-left">{{ gameInitial }}</div>
             </div>
-            <span class="c-black">{{ turn | turnMessage }}</span>
+            <span class="c-black" ng-show="active">{{ turn | turnMessage }}</span>
+            <span class="c-black" ng-show="!active">Game Complete</span>
         </div>
 
         <ul class="lv-actions actions">
@@ -27,7 +28,7 @@
                         <a href="">Help</a>
                     </li>
                     <li>
-                        <a href="">Resign Game</a>
+                        <a href="" ng-click="deactivateGame()">Resign Game</a>
                     </li>
                 </ul>
             </li>

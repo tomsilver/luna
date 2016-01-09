@@ -1,13 +1,16 @@
 <div class="card">
 	<div class="card-body card-padding">
-    	<small ng-show="phase < 6">
+    	<small ng-show="phase < 6 && active">
         The Guess Phase is not yet complete.
     	</small>
-	    <div class="card-header" ng-show="phase == 6">
+	    <div class="card-header" ng-show="phase >= 6 || !active">
 	        <h3>Game Outcome: <strong>TODO</strong></h3>
 	        <h3>Your New Smarts Rating: <strong>TODO</strong></h3>
 	        <h2>Actual Opponent Smart Rating: <strong>TODO</strong> (You guessed {{ myGuess }})</h2>
 	        <h2>Your Opponent’s Guess of Your Rating: <strong>{{ opGuess }}</strong> (Your rating was TODO)</h2>
 	    </div>
+	    <small ng-show="!active">
+            This game has been deactivated. This occurs when all phases are completed, a player resigns or a game times out.
+        </small>
 	</div>
 </div>

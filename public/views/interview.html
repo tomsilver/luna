@@ -11,23 +11,26 @@
 	                <label for="question{{ n }}" class="col-sm-1 control-label">{{ n+1 }}.</label>
 	                <div class="col-sm-11">
 	                    <div class="fg-line">
-	                        <input type="text" class="form-control input-sm" ng-model="questions[n]" placeholder="Question {{ n+1 }}" ng-readonly="submitted">
+	                        <input type="text" class="form-control input-sm" ng-model="questions[n]" placeholder="Question {{ n+1 }}" ng-readonly="submitted || !active">
 	                    </div>
 	                </div>
 	            </div>
             </div>
-            <div ng-show="!submitted">
+            <div ng-show="!submitted && active">
 	            <div class="form-group">
 	                <div class="col-sm-offset-1 col-sm-11">
 	                    <button type="submit" class="btn btn-primary btn-sm">Submit</button>
 	                </div>
 	            </div>
 	        </div>
-	        <div ng-show="phase == 1">
+	        <div ng-show="(phase == 1) && active">
 	            <h2><small>Waiting for opponent's interview...</small></h2>
 	        </div>
-	        <div ng-show="phase > 1">
+	        <div ng-show="(phase > 1) && active">
 	            <h2><small>The Interview Phase is complete. Click on Response to view the next phase.</small></h2>
+	        </div>
+	        <div ng-show="!active">
+	            <h2><small>This game has been deactivated. This occurs when all phases are completed, a player resigns or a game times out.</small></h2>
 	        </div>
         </form>
     </div>
