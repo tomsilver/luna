@@ -123,8 +123,6 @@ luna
         'game', 
         function($scope, $state, $stateParams, games, game){
 
-        console.log(game);
-
         $scope.gameColor = game.color;
         $scope.gameInitial = game.initial;
         $scope.turn = game.turn;
