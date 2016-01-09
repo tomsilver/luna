@@ -3,9 +3,7 @@ luna
     // Base controller for common functions
     // =========================================================================
 
-    .controller('lunaCtrl', function($timeout, $state, $scope, growlService){
-        //Welcome Message
-        growlService.growl('Welcome back Tom!', 'inverse');
+    .controller('lunaCtrl', function($timeout, $state, $scope){
         
         // Detect Mobile Browser
         if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
@@ -59,10 +57,14 @@ luna
     // =========================================================================
     // Header
     // =========================================================================
-    .controller('headerCtrl', function(){
-
-    })
-
+    .controller('headerCtrl', [
+        '$scope',
+        'auth',
+        function($scope, auth){
+          $scope.isLoggedIn = auth.isLoggedIn;
+          $scope.currentUser = auth.currentUser;
+          $scope.logOut = auth.logOut;
+    }])
 
     //=================================================
     // Home
@@ -78,7 +80,6 @@ luna
             $scope.$watch('games', function (newVal) {console.log("game updated");}, true);
         });
 
-
         $scope.newGame = function() {
             games.create($scope.player, function(newGame) {
                 $location.path('/home/'+newGame._id);
@@ -87,6 +88,32 @@ luna
 
     }])
 
+    //=================================================
+    // Auth
+    //=================================================
+    .controller('AuthCtrl', [
+        '$scope',
+        '$state',
+        'auth',
+        function($scope, $state, auth){
+          $scope.user = {};
+
+          $scope.register = function(){
+            auth.register($scope.user).error(function(error){
+              $scope.error = error;
+            }).then(function(){
+              $state.go('home.new');
+            });
+          };
+
+          $scope.logIn = function(){
+            auth.logIn($scope.user).error(function(error){
+              $scope.error = error;
+            }).then(function(){
+              $state.go('home.new');
+            });
+          };
+        }])
 
 
 

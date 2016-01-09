@@ -92,4 +92,28 @@ luna
                     }]
                   }
             })
+
+            //Login
+            .state('login', {
+              url: '/login',
+              templateUrl: 'views/login.html',
+              controller: 'AuthCtrl',
+              onEnter: ['$state', 'auth', function($state, auth){
+                if(auth.isLoggedIn()){
+                  $state.go('home.new');
+                }
+              }]
+            })
+
+            //Register
+            .state('register', {
+              url: '/register',
+              templateUrl: 'views/register.html',
+              controller: 'AuthCtrl',
+              onEnter: ['$state', 'auth', function($state, auth){
+                if(auth.isLoggedIn()){
+                  $state.go('home.new');
+                }
+              }]
+            });
     });
