@@ -3,6 +3,7 @@ var luna = angular.module('luna', [
 	'phaseFilters',
 	'colorFilters',
 	'turnFilters',
+	'outcomeFilters',
     'ngResource',
     'ui.router',
     'ui.bootstrap',

@@ -25,6 +25,21 @@ angular.module('turnFilters', []).filter('turnMessage', function() {
   };
 });
 
+angular.module('outcomeFilters', []).filter('outcomeFilter', function() {
+  return function(outcome) {
+    if (outcome == 1) {
+        return 'You won!';
+    }
+    if (outcome == 0) {
+        return 'Loss';
+    }
+    if (outcome == 2) {
+        return 'You tied!';
+    }
+    return 'No contest';
+  };
+});
+
 angular.module('colorFilters', []).filter('colorName', function() {
   return function(colorNum) {
   	var color;

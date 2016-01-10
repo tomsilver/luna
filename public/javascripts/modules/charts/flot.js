@@ -13,8 +13,13 @@ luna
                 var datum;
                 for (var i = 0; i<scope.smartsRatingHistory.length; i++) {
                     datum = scope.smartsRatingHistory[i];
-                    d.push([datum.date, datum.rating]);
+                    d.push([Date.parse(datum.date)*1000, datum.rating]);
                 }
+
+                var timeRep = function(x) {
+                    var original = new Date(parseInt(x/1000));
+                    return original.toLocaleDateString();;
+                };
                 
                 /* Chart Options */
     
@@ -36,7 +41,9 @@ luna
                     },
                     xaxis: {
                         tickDecimals: 0,
-                        ticks: false
+                        ticks: false,
+                        mode: "time",
+                        timeformat: "%y/%m/%d" 
                     },
 
                     yaxis: {
@@ -62,7 +69,7 @@ luna
                         if (item) {
                             var x = item.datapoint[0].toFixed(2),
                                 y = item.datapoint[1].toFixed(2);
-                            $(".flot-tooltip").html(item.series.label + " at " + x + " was " + y).css({top: item.pageY+5, left: item.pageX+5}).show();
+                            $(".flot-tooltip").html(item.series.label + " on " + timeRep(x) + " was " + y).css({top: item.pageY+5, left: item.pageX+5}).show();
                         }
                         else {
                             $(".flot-tooltip").hide();

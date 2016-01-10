@@ -153,10 +153,19 @@ luna
             selectedOption: {id: $scope.myInitial, name: $scope.myInitial }
         };
 
+        $scope.getMaxRating = function(srHistory) {
+            var maxRating = 0;
+            for (var i=0; i<srHistory.length; i++) {
+                if (srHistory[i].rating > maxRating)
+                    maxRating = srHistory[i].rating;
+            }
+            return maxRating;
+        };
+
         $scope.numWins = $scope.player.numWins;
         $scope.smartsRating = $scope.player.smartsRating;
         $scope.smartsRatingHistory = $scope.player.smartsRatingHistory;
-        $scope.maxRating = Math.max($scope.smartsRatingHistory);
+        $scope.maxRating = $scope.getMaxRating($scope.smartsRatingHistory);
         $scope.winningStreak = $scope.player.winningStreak;
         $scope.winningStreakRecord = $scope.player.winningStreakRecord;
         $scope.totalGames = $scope.player.numGames;
@@ -291,11 +300,17 @@ luna
             });
         }
 
-        $interval(function() {
+        $scope.gameUpdate = $interval(function() {
             if ($scope.active) {
-                $scope.getCurrentGames();
+                $scope.getCurrentGames(function() {});
             }
         }, 10000);
+
+        $scope.$on("$destroy",function(){
+            if (angular.isDefined($scope.gameUpdate)) {
+                $interval.cancel($scope.gameUpdate);
+            }
+        });
 
     }])
 
@@ -437,15 +452,17 @@ luna
         'game', 
         function($scope, $stateParams, games, game){
 
-        $scope.myGuess = 'None';
-        $scope.opGuess = 'None';
-
         if ($scope.phase >= 6) {
             $scope.myGuess = game.guess;
             $scope.opGuess = game.opGuess;
+            $scope.outcome = game.outcome;
+            $scope.smartsRating = game.smartsRating;
+            $scope.opSmartsRating = game.opSmartsRating;
+            $scope.oldSmartsRating = game.oldSmartsRating;
 
             if (games.current)
-                games.deactivate($stateParams.id);
+                games.deactivate($stateParams.id, function() {});
+
         }
 
     }])

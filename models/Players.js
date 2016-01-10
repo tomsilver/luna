@@ -11,6 +11,7 @@ var PlayerSchema = new mongoose.Schema({
   salt: String,
   smartsRating: { type: Number, default: null },
   smartsRatingHistory : [{ rating: Number, date: Date }],
+  guessHistory : [{ type: Number }],
   numWins: { type: Number, default: 0 },
   winningStreak: { type: Number, default: 0 },
   winningStreakRecord: { type: Number, default: 0 },

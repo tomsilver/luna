@@ -17,7 +17,11 @@ var GameSchema = new mongoose.Schema({
   outcome: { type: Number, default: 0 },
   updateDate: { type : Date, default: Date.now },
   active1: {type: Boolean, default: true },
-  active2: {type: Boolean, default: true }
+  active2: {type: Boolean, default: true },
+  smartsRating1: Number,
+  smartsRating2: Number,
+  newSmartsRating1: Number,
+  newSmartsRating2: Number
 });
 
 mongoose.model('Game', GameSchema);

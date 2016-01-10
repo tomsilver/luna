@@ -19,6 +19,17 @@ var Response = mongoose.model('Response');
 var Game = mongoose.model('Game');
 
 /* helper functions */
+var add = function(a, b) {
+    return a + b;
+};
+
+var mean = function(arr) {
+	if (!arr.length)
+		return 0;
+	var s = arr.reduce(add, 0.0);
+	return s/arr.length;
+};
+
 var getRandomInitial = function() {
 	var letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'v', 'w', 'z'];
 	return letters[Math.floor(Math.random()*letters.length)];
@@ -144,21 +155,34 @@ var individualizeGame = function(player, game, callback) {
 	var opResponses = [];
 	var guess = game['guess'+String(pNum)];
 	var opGuess = null;
-	var outcome = game.outcome;
+	var outcome = null;
 	var color = game['color'+String(oNum)];
 	var initial = game['initial'+String(oNum)];
 	var turn = getTurn(game, pNum);
 	var _id = game._id;
 	var updateDate = game.updateDate;
 	var active = game['active'+String(pNum)];
+	var smartsRating = 'Not set';
+	var opSmartsRating = null;
+	var oldSmartsRating = 'Not set';
 
 
 	if (phase > 1) {
 		opQuestions = game['questions'+String(oNum)];
 		if (phase > 3) {
 			opResponses = game['responses'+String(oNum)];
-			if (phase > 5)
+			if (phase > 5) {
 				opGuess = game['guess'+String(oNum)];
+				smartsRating = game['newSmartsRating'+String(pNum)];
+				opSmartsRating = game['smartsRating'+String(oNum)];
+				oldSmartsRating = game['smartsRating'+String(pNum)];
+				if (game.outcome == pNum)
+					outcome = 1;
+				else if (game.outcome == oNum)
+					outcome = 0;
+				else
+					outcome = game.outcome;
+			}
 		}
 	}
 
@@ -176,7 +200,10 @@ var individualizeGame = function(player, game, callback) {
 		turn: turn,
 		phase: phase,
 		updateDate: updateDate,
-		active: active
+		active: active,
+		smartsRating: smartsRating,
+		opSmartsRating: opSmartsRating,
+		oldSmartsRating: oldSmartsRating
 	};
 
 	callback(o);
@@ -416,6 +443,122 @@ router.post('/home/:game/response', auth, function(req, res, next) {
 router.post('/home/:game/guess', auth, function(req, res, next) {
   var guess = req.body.guess;
 
+  var updatePlayer = function(player, callback) {
+  	Player.findById(player._id)
+  		.exec(function(err, savedPlayer) {
+  			console.log(savedPlayer);
+  			Object.assign(savedPlayer, player);
+  			console.log(savedPlayer);
+  			savedPlayer.save(function(err, savedPlayer) {
+  				console.log(err);
+  				if(err){ return next(err); }
+		  		callback();
+  			});
+  		});
+  };
+
+  var finishGame = function(game, callback) {
+  	console.log("attempting to finish game");
+  	console.log(game._id);
+  	Game.findById(game._id)
+  		.populate('player1')
+  		.populate('player2')
+  		.exec(function(err, game) {
+  		game.player1.guessHistory.push(game.guess2);
+  		game.player2.guessHistory.push(game.guess1);
+
+  		var firstTime1 = (game.player1.guessHistory.length <= 1);
+  		var firstTime2 = (game.player2.guessHistory.length <= 1);
+  		var isWinner1 = false;
+  		var isWinner2 = false;
+
+  		game.smartsRating1 = game.player1.smartsRating;
+  		game.smartsRating2 = game.player2.smartsRating;
+
+  		if (!firstTime1)
+  			game.player1.smartsRating = mean(game.player1.guessHistory);
+  		else
+  			game.player1.smartsRating = game.guess2;
+
+  		if (!firstTime2)
+  			game.player2.smartsRating = mean(game.player2.guessHistory);
+  		else
+  			game.player2.smartsRating = game.guess1;
+
+  		game.newSmartsRating1 = game.player1.smartsRating;
+  		game.newSmartsRating2 = game.player2.smartsRating;
+
+  		var now = new Date().toISOString();
+
+  		game.player1.smartsRatingHistory.push({rating: game.player1.smartsRating, date: now});
+  		game.player2.smartsRatingHistory.push({rating: game.player2.smartsRating, date: now});
+
+  		var err1 = Math.abs(game.smartsRating2 - game.guess1);
+		var err2 = Math.abs(game.smartsRating1 - game.guess2);
+
+		if (firstTime1 || firstTime2) {
+			isWinner1 = true;
+			isWinner2 = true;
+
+			if (firstTime1 && firstTime2)
+				game.outcome = 3;
+			else if (firstTime1)
+				game.outcome = 2;
+			else
+				game.outcome = 1;
+		}
+
+		else {
+			if (err1 > err2) {
+				game.outcome = 2;
+				isWinner1 = true;
+			}
+			else if (err2 > err1) {
+				game.outcome = 1;
+				isWinner2 = true;
+			}
+			else {
+				game.outcome = 3;
+			}
+		}
+
+		game.player1.numGames += 1;
+		game.player2.numGames += 1;
+
+		if (isWinner1) {
+			game.player1.numWins += 1;
+			game.player1.winningStreak += 1;
+			if (game.player1.winningStreak > game.player1.winningStreakRecord) {
+				game.player1.winningStreakRecord = game.player1.winningStreak;
+			}
+		}
+		else {
+			game.player1.winningStreak = 0;
+		}
+
+		if (isWinner2) {
+			game.player2.numWins += 1;
+			game.player2.winningStreak += 1;
+			if (game.player2.winningStreak > game.player2.winningStreakRecord) {
+				game.player2.winningStreakRecord = game.player2.winningStreak;
+			}
+		}
+		else {
+			game.player2.winningStreak = 0;
+		}
+
+		game.save(function(err, game) {
+	  		if(err){ return next(err); }
+	  		updatePlayer(game.player1, function(){
+	  		  updatePlayer(game.player2, function() {
+	  		    callback(game);
+	  		  });
+	  		});
+	  	});
+
+  	});
+  };
+
   var saveGame = function(player) {
   	req.game['guess'+String(playerNum(player, req.game))] = guess;
   	req.game.save(function(err, game) {
@@ -425,11 +568,19 @@ router.post('/home/:game/guess', auth, function(req, res, next) {
 		req.game._id,
 		{ $inc: { phase : 1} },
 		{ new: true }, function(err, game) {
-		individualizeGame(player, game, function(indvGame) {
-			res.json(indvGame);
-		});
+		if (game.phase == 6) {
+		  finishGame(game, function(game) {
+		    individualizeGame(player, game, function(indvGame) {
+			  res.json(indvGame);
+			});
+		  });
+		}
+		else {
+		  individualizeGame(player, game, function(indvGame) {
+		    res.json(indvGame);
+		  });
+		}
 	  });
-
 	}); 
   };
 
