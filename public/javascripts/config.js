@@ -10,13 +10,19 @@ luna
                 abstract: true,
                 url: '/home',
                 templateUrl: 'views/home.html',
-                controller: 'homeCtrl'
+                controller: 'homeCtrl',
+                onEnter: ['$state', 'auth', function($state, auth){
+                  if(!auth.isLoggedIn()){
+                    $state.go('login');
+                  }
+              }]
             })
 
             //New game
             .state('home.new', {
                 url: '',
-                templateUrl: 'views/new.html'
+                templateUrl: 'views/new.html',
+                controller: 'newCtrl'
             })
 
             //Game

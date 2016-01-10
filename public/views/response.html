@@ -18,8 +18,9 @@
                     <button type="submit" class="btn btn-primary btn-sm m-t-10">Submit</button>
                 </div>
             </div>
-            <div ng-show="phase == 3 && active">
+            <div ng-show="(phase <= 3) && (submitted && active)">
                 <h2><small>Waiting for opponent's responses...</small></h2>
+                <a class="btn btn-primary btn-block bgm-bluegray" href="" ng-click="goToNextGame()">Next Game</a>
             </div>
             <div ng-show="phase > 3 && active">
                 <h2><small>The Response Phase is complete. Click on Guess to view the next phase.</small></h2>

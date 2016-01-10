@@ -8,5 +8,6 @@ var luna = angular.module('luna', [
     'ui.bootstrap',
     'angular-loading-bar',
     'oc.lazyLoad',
-    'nouislider'
+    'nouislider',
+    'angular-md5'
  ])

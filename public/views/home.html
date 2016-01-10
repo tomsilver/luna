@@ -24,7 +24,7 @@
                         <div class="lv-avatar bgm-{{ game.color | colorName }} pull-left">{{ game.initial }} </div>
                         <div class="media-body">
                             <div ng-class="(game.turn) ? 'lv-emph' : 'lv-title'" ng-show="game.active">{{ game.turn | turnMessage }}</div>
-                            <div class="lv-title" ng-show"!game.active">Game Complete</div>
+                            <div class="lv-title" ng-hide="game.active">Game Complete</div>
                             <div class="lv-small">{{ game.phase | phaseName }}</div>
                         </div>
                     </a>

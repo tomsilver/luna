@@ -23,8 +23,9 @@
 	                </div>
 	            </div>
 	        </div>
-	        <div ng-show="(phase == 1) && active">
+	        <div ng-show="(phase <= 1) && (submitted && active)">
 	            <h2><small>Waiting for opponent's interview...</small></h2>
+	            <a class="btn btn-primary btn-block bgm-bluegray" href="" ng-click="goToNextGame()">Next Game</a>
 	        </div>
 	        <div ng-show="(phase > 1) && active">
 	            <h2><small>The Interview Phase is complete. Click on Response to view the next phase.</small></h2>

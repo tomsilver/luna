@@ -67,64 +67,39 @@ luna
     }])
 
     //=================================================
-    // Home
-    //=================================================
-    .controller('homeCtrl', [
-        '$scope',
-        '$location',
-        'games',
-        function($scope, $location, games){
-
-        $scope.currentOrPast = 'Current';
-
-        $scope.getCurrentGames = function() {
-            games.getCurrentGames(function() {
-                $scope.games = games.currentGames;
-                $scope.currentOrPast = 'Current';
-            });
-        };
-
-        $scope.getPastGames = function() {
-            games.getPastGames(function() {
-                $scope.games = games.pastGames;
-                $scope.currentOrPast = 'Past';
-            });
-        };
-
-        $scope.newGame = function() {
-            games.create($scope.player, function(newGame) {
-                $location.path('/home/'+newGame._id);
-                $scope.getCurrentGames();
-            });
-        };
-
-        $scope.getCurrentGames();
-
-    }])
-
-    //=================================================
     // Auth
     //=================================================
     .controller('AuthCtrl', [
         '$scope',
         '$state',
         'auth',
-        function($scope, $state, auth){
+        'md5',
+        function($scope, $state, auth, md5){
           $scope.user = {};
 
+          $scope.hashUser = function(user, callback) {
+            userCopy = angular.copy(user);
+            userCopy.username = md5.createHash(userCopy.username || '');
+            callback(userCopy);
+          };
+
           $scope.register = function(){
-            auth.register($scope.user).error(function(error){
-              $scope.error = error;
-            }).then(function(){
-              $state.go('home.new');
+            $scope.hashUser($scope.user, function(user) {
+                auth.register(user).error(function(error){
+                  $scope.error = error;
+                }).then(function(){
+                  $state.go('home.new');
+                });
             });
           };
 
           $scope.logIn = function(){
-            auth.logIn($scope.user).error(function(error){
-              $scope.error = error;
-            }).then(function(){
-              $state.go('home.new');
+            $scope.hashUser($scope.user, function(user) {
+                auth.logIn(user).error(function(error){
+                  $scope.error = error;
+                }).then(function(){
+                  $state.go('home.new');
+                });
             });
           };
         }])
@@ -152,17 +127,78 @@ luna
 
     }])
 
+
     //=================================================
     // Game
     //=================================================
+    .controller('homeCtrl', [
+        '$scope',
+        '$location',
+        'games',
+        function($scope, $location, games){
+
+        $scope.currentOrPast = 'Current';
+
+        $scope.getCurrentGames = function(callback) {
+            games.getCurrentGames(function() {
+                $scope.games = games.currentGames;
+                $scope.currentOrPast = 'Current';
+                callback();
+            });
+        };
+
+        $scope.getPastGames = function(callback) {
+            games.getPastGames(function() {
+                $scope.games = games.pastGames;
+                $scope.currentOrPast = 'Past';
+                callback();
+            });
+        };
+
+        $scope.newGame = function() {
+            games.create($scope.player, function(newGame) {
+                $location.path('/home/'+newGame._id);
+                $scope.getCurrentGames();
+            });
+        };
+
+        $scope.findMyTurnGame = function(callback) {
+            games.findMyTurnGame(function(myTurnGame) {
+                callback(myTurnGame);
+            });
+        };
+
+        $scope.goToNextGame = function() {
+            $scope.findMyTurnGame(function(myTurnGame) {
+                if (myTurnGame)
+                    $location.path('/home/'+myTurnGame._id);
+                else
+                    $scope.newGame();
+            });
+        };
+    }])
+
+    .controller('newCtrl', [
+        '$scope',
+        '$location',
+        function($scope, $location){
+
+        $scope.getCurrentGames(function() {
+            $scope.findMyTurnGame(function(myTurnGame) {
+                if (myTurnGame)
+                    $location.path('/home/'+myTurnGame._id);
+            });
+        });
+    }])
 
     .controller('gameCtrl', [
         '$scope',
         '$state',
         '$stateParams', 
+        '$interval',
         'games',
         'game', 
-        function($scope, $state, $stateParams, games, game){
+        function($scope, $state, $stateParams, $interval, games, game){
 
         $scope.gameColor = game.color;
         $scope.gameInitial = game.initial;
@@ -191,7 +227,22 @@ luna
             games.deactivate($stateParams.id, $scope.getPastGames);
         };
 
-        $scope.goToPhase($scope.phase);
+        if ($scope.active) {
+            $scope.getCurrentGames(function() {
+                $scope.goToPhase($scope.phase);
+            });
+        }
+        else {
+            $scope.getPastGames(function() {
+                $scope.goToPhase($scope.phase);
+            });
+        }
+
+        $interval(function() {
+            if ($scope.active) {
+                $scope.getCurrentGames();
+            }
+        }, 10000);
 
     }])
 

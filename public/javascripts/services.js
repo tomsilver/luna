@@ -149,6 +149,19 @@ luna
         });
       };
 
+      o.findMyTurnGame = function(callback) {
+        var myTurnGame = false;
+        
+        for (var i=0; i<o.currentGames.length; i++) {
+          if (o.currentGames[i].turn == 1) {
+            myTurnGame = o.currentGames[i];
+            break;
+          }
+        }
+        
+        callback(myTurnGame);
+      };
+
       o.get = function(id) {
         return $http.get('/home/' + id, {
           headers: {Authorization: 'Bearer '+auth.getToken()}
