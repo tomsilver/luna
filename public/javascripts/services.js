@@ -37,7 +37,7 @@ luna
     // Players
     //==============================================
 
-    .factory('players', ['$http', function($http){
+    .factory('players', ['$http', 'auth', function($http, auth){
       var o = {
         player: null
       };
@@ -48,8 +48,12 @@ luna
         });
       };
 
-      o.get = function(id) {
-        return $http.get('/profile/' + id).then(function(res){
+      o.get = function() {
+        return $http.get('/profile', {
+          headers: {Authorization: 'Bearer '+auth.getToken()}
+        }).then(function(res){
+          console.log(res.data);
+          o.player = res.data;
           return res.data;
         });
       };
@@ -140,8 +144,8 @@ luna
         });
       };
 
-      o.create = function(player, callback) {
-        return $http.post('/home', player, {
+      o.create = function(callback) {
+        return $http.post('/home', {}, {
           headers: {Authorization: 'Bearer '+auth.getToken()}
         }).success(function(data){
           o.currentGames.push(data);

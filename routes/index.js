@@ -439,18 +439,8 @@ router.post('/profile', auth, function(req, res, next) {
   });
 });
 
-router.param('player', auth, function(req, res, next, id) {
-  var query = Player.findById(id);
-
-  query.exec(function (err, player){
-    if (err) { return next(err); }
-    if (!player) { return next(new Error('can\'t find player')); }
-
-    req.player = player;
-    return next();
+router.get('/profile', auth, function(req, res) {
+  playerFromRequest(req, function(player) {
+  	res.json(player);
   });
-});
-
-router.get('/profile/:player', auth, function(req, res) {
-  res.json(req.player);
 });

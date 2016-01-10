@@ -46,11 +46,6 @@ luna
         this.skinSwitch = function (color) {
             this.currentSkin = color;
         }
-
-        $scope.player = { _id: "568d621f237a26700ffe0379" };
-
-        // 568d621f237a26700ffe0379
-        // 568c52ded4566fa60b760937
     
     })
 
@@ -113,15 +108,10 @@ luna
     .controller('profileCtrl', [
         '$scope', 
         'players',
-        'player', 
-        function($scope, players, player){
+        function($scope, players){
         
-        //Get Profile Information from profileService Service
         
-        //User    
-        $scope.fullName = player.name;
-        $scope.joinDate = player.joinDate;
-        $scope.emailAddress = "tomssilver@gmail.com";
+        $scope.joinDate = players.player.updated;
         $scope.numWins = 24;
         $scope.smartsRating = 82;
 
@@ -156,7 +146,7 @@ luna
         };
 
         $scope.newGame = function() {
-            games.create($scope.player, function(newGame) {
+            games.create(function(newGame) {
                 $location.path('/home/'+newGame._id);
                 $scope.getCurrentGames();
             });
@@ -224,7 +214,10 @@ luna
         };
 
         $scope.deactivateGame = function() {
-            games.deactivate($stateParams.id, $scope.getPastGames);
+            games.deactivate($stateParams.id, function() {
+                $scope.active = 0;
+                $scope.getPastGames();
+            });
         };
 
         if ($scope.active) {
@@ -270,8 +263,7 @@ luna
         $scope.submitQuestions = function() {
             $scope.submitted = true;
             var questionReq = {
-                questions: $scope.questions,
-                player: $scope.player
+                questions: $scope.questions
             };
             games.addQuestions($stateParams.id, questionReq, function(data) {
                 $scope.goToPhase(data.phase, function() {
@@ -314,8 +306,7 @@ luna
             $scope.submitResponses = function() {
                 $scope.submitted = true;
                 var responseReq = {
-                    responses: $scope.responses,
-                    player: $scope.player
+                    responses: $scope.responses
                 };
                 games.addResponses($stateParams.id, responseReq, function(data) {
                     $scope.goToPhase(data.phase, function() {
@@ -365,8 +356,7 @@ luna
             $scope.submitGuess = function() {
                 $scope.submitted = true;
                 var guessReq = {
-                    guess: $scope.guess,
-                    player: $scope.player
+                    guess: $scope.guess
                 };
                 games.addGuess($stateParams.id, guessReq, function(data) {
                     $scope.goToPhase(data.phase, function() {

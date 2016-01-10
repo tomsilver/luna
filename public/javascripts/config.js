@@ -88,15 +88,19 @@ luna
         
             //Profile
             .state ('profile', {
-                url: '/profile/{id}',
+                url: '/profile',
                 templateUrl: 'views/profile.html',
                 controller: 'profileCtrl',
-                controllerAs: 'pctrl',
                 resolve: {
-                    player: ['$stateParams', 'players', function($stateParams, players) {
-                      return players.get($stateParams.id);
-                    }]
+                  player: ['players', function(players) {
+                    return players.get();
+                  }]
+                },
+                onEnter: ['$state', 'auth', function($state, auth){
+                  if(!auth.isLoggedIn()){
+                    $state.go('login');
                   }
+                }]
             })
 
             //Login
