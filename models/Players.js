@@ -9,6 +9,15 @@ var PlayerSchema = new mongoose.Schema({
   username: {type: String, lowercase: true, unique: true},
   hash: String,
   salt: String,
+  smartsRating: { type: Number, default: null },
+  smartsRatingHistory : [{ rating: Number, date: Date }],
+  numWins: { type: Number, default: 0 },
+  winningStreak: { type: Number, default: 0 },
+  winningStreakRecord: { type: Number, default: 0 },
+  numGames: { type: Number, default: 0 },
+  isMachine: { type: Boolean, default: 0 },
+  initial: String,
+  color: Number,
   updated: { type: Date, default: Date.now }
 });
 

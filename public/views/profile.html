@@ -5,9 +5,25 @@
             <div class="pmo-pic">
                 <div class="p-relative">
                     <a href="">
-                        <img class="img-responsive" src="img/profile-pics/profile-pic-t.png" alt="">
+                        <div class="profile-avatar bgm-{{ myColor | colorName }} pull-left">{{ myInitial }} </div>
                     </a>
                 </div>
+                <form name="avatarSelects">
+                    <div class="form-group">
+                        <div class="fg-line">
+                            <div class="select">
+                                <select class="form-control" name="colorSelect" id="colorSelect" ng-options="option.name for option in colorData.availableOptions track by option.id" ng-model="colorData.selectedOption" ng-change="colorUpdate()"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="fg-line">
+                            <div class="select">
+                                <select class="form-control" name="initialSelect" id="initialSelect" ng-options="(option.name | uppercase) for option in initialData.availableOptions track by option.id" ng-model="initialData.selectedOption" ng-change="initialUpdate()"></select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
 
             <div class="pmo-block pmo-contact hidden-xs">
@@ -24,42 +40,15 @@
                 <div class="pmbb-header">
                     <h2>Smarts Rating History</h2>
                     <small>Your Smarts Rating is an average of Guesses made by previous opponents.</small>
-
-                    <ul class="actions">
-                        <li>
-                            <a href="">
-                                <i class="zmdi zmdi-refresh-alt"></i>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="">
-                                <i class="zmdi zmdi-download"></i>
-                            </a>
-                        </li>
-                        <li class="dropdown" uib-dropdown>
-                            <a href="" uib-dropdown-toggle>
-                                <i class="zmdi zmdi-more-vert"></i>
-                            </a>
-
-                            <ul class="dropdown-menu dropdown-menu-right">
-                                <li>
-                                    <a href="">Change Date Range</a>
-                                </li>
-                                <li>
-                                    <a href="">Change Graph Type</a>
-                                </li>
-                                <li>
-                                    <a href="">Other Settings</a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
                 </div>
 
-                <div class="pmbb-body">
+                <div class="pmbb-body" ng-show="totalGames > 1">
                     <div class="chart-edge">
                         <div class="flot-chart" data-curvedline-chart></div>
                     </div>
+                </div>
+                <div ng-hide="totalGames">
+                     After you play at least two games, you will be able to see a chart of your Smarts Rating history here.
                 </div>
             </div>
 
@@ -70,7 +59,18 @@
                             <div class="clearfix">
                                 <div class="count">
                                     <small>Longest Winning Streak</small>
-                                    <h2>5 wins</h2>
+                                    <h2>{{ winningStreakRecord }} wins</h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6 col-md-3">
+                        <div class="mini-charts-item bgm-bluegray">
+                            <div class="clearfix">
+                                <div class="count">
+                                    <small>Current Winning Streak</small>
+                                    <h2>{{ winningStreak }} wins</h2>
                                 </div>
                             </div>
                         </div>
@@ -81,7 +81,7 @@
                             <div class="clearfix">
                                 <div class="count">
                                     <small>Highest Smarts Rating</small>
-                                    <h2>90</h2>
+                                    <h2>{{ maxRating }}</h2>
                                 </div>
                             </div>
                         </div>
@@ -91,23 +91,13 @@
                         <div class="mini-charts-item bgm-orange">
                             <div class="clearfix">
                                 <div class="count">
-                                    <small>Winning Percentile</small>
-                                    <h2>80%</h2>
+                                    <small>Game Record</small>
+                                    <h2>{{ totalGames ? numWins/totalGames: 0 | number:3 }}</h2>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-sm-6 col-md-3">
-                        <div class="mini-charts-item bgm-bluegray">
-                            <div class="clearfix">
-                                <div class="count">
-                                    <small>Smarts Rating Percentile</small>
-                                    <h2>85%</h2>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
 

@@ -109,11 +109,71 @@ luna
         '$scope', 
         'players',
         function($scope, players){
+
+        $scope.letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'y', 'z'];
+        $scope.colors = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+        var colorNames = [
+              {id: '0', name: 'Black'},
+              {id: '1', name: 'Brown'},
+              {id: '2', name: 'Red'},
+              {id: '3', name: 'Blue'},
+              {id: '4', name: 'Purple'},
+              {id: '5', name: 'Deep Purple'},
+              {id: '6', name: 'Light Blue'},
+              {id: '7', name: 'Cyan'},
+              {id: '8', name: 'Teal'},
+              {id: '9', name: 'Green'},
+              {id: '10', name: 'Light Green'},
+              {id: '11', name: 'Lime'},
+              {id: '12', name: 'Yellow'},
+              {id: '13', name: 'Amber'},
+              {id: '14', name: 'Deep Orange'},
+              {id: '15', name: 'Gray'},
+              {id: '16', name: 'Indigo'}
+            ];
+
+        var letterOptions = [];
+        for (var i=0; i<$scope.letters.length; i++)
+            letterOptions.push({id: $scope.letters[i], name: $scope.letters[i]});
         
-        
-        $scope.joinDate = players.player.updated;
-        $scope.numWins = 24;
-        $scope.smartsRating = 82;
+        $scope.player = players.player.player;
+        $scope.joinDate = players.player.joinDate;
+
+        $scope.myInitial = $scope.player.initial;
+        $scope.myColor = $scope.player.color;
+
+        $scope.colorData = {
+            availableOptions: colorNames,
+            selectedOption: {id: $scope.myColor, name: colorNames[$scope.myColor].name }
+        };
+
+        $scope.initialData = {
+            availableOptions: letterOptions,
+            selectedOption: {id: $scope.myInitial, name: $scope.myInitial }
+        };
+
+        $scope.numWins = $scope.player.numWins;
+        $scope.smartsRating = $scope.player.smartsRating;
+        $scope.smartsRatingHistory = $scope.player.smartsRatingHistory;
+        $scope.maxRating = Math.max($scope.smartsRatingHistory);
+        $scope.winningStreak = $scope.player.winningStreak;
+        $scope.winningStreakRecord = $scope.player.winningStreakRecord;
+        $scope.totalGames = $scope.player.numGames;
+
+        $scope.initialUpdate = function() {
+            var initialData = $scope.initialData.selectedOption.id;
+            players.initialUpdate(initialData, function(newInitial) {
+                $scope.myInitial = newInitial;
+            });
+        };
+
+        $scope.colorUpdate = function() {
+            var colorData = $scope.colorData.selectedOption.id;
+            players.colorUpdate(colorData, function(newColor) {
+                $scope.myColor = newColor;
+            });
+        };
 
     }])
 

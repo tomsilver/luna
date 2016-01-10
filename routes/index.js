@@ -18,6 +18,17 @@ var Question = mongoose.model('Question');
 var Response = mongoose.model('Response');
 var Game = mongoose.model('Game');
 
+/* helper functions */
+var getRandomInitial = function() {
+	var letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'v', 'w', 'z'];
+	return letters[Math.floor(Math.random()*letters.length)];
+};
+
+var getRandomColor = function() {
+	var colors = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+	return colors[Math.floor(Math.random()*colors.length)];
+};
+
 /* register a new player */
 router.post('/register', function(req, res, next){
   if(!req.body.username || !req.body.password){
@@ -27,6 +38,8 @@ router.post('/register', function(req, res, next){
   var player = new Player();
   player.username = req.body.username;
   player.setPassword(req.body.password);
+  player.initial = getRandomInitial();
+  player.color = getRandomColor();
 
   player.save(function (err){
     if(err){ return next(err); }
@@ -174,10 +187,8 @@ var individualizeGame = function(player, game, callback) {
 /* new game */
 router.post('/home', auth, function(req, res, next) {
 	/* random opponent identifiers */
-	var letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'v', 'w', 'z'];
-	var colors = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-	var myInitial = letters[Math.floor(Math.random()*letters.length)];
-	var myColor = colors[Math.floor(Math.random()*colors.length)];
+	var myInitial = getRandomInitial();
+	var myColor = getRandomColor();
 	/* look up player */
 	playerFromRequest(req, function (player){
 	    req.player = player;
@@ -428,19 +439,41 @@ router.post('/home/:game/guess', auth, function(req, res, next) {
 });
 
 
-/* profile routes */
-router.post('/profile', auth, function(req, res, next) {
-  var player = new Player(req.body);
-
-  player.save(function(err, player){
-    if(err){ return next(err); }
-
-    res.json(player);
+/* profile */
+router.get('/profile', auth, function(req, res) {
+  playerFromRequest(req, function(player) {
+  	var o = {
+  		joinDate: player._id.getTimestamp(),
+  		player: player
+  	};
+  	res.json(o);
   });
 });
 
-router.get('/profile', auth, function(req, res) {
+router.post('/profile/initial', auth, function(req, res, next) {
   playerFromRequest(req, function(player) {
-  	res.json(player);
+  	  
+  	var newInitial = req.body.initial;
+  	player.initial = newInitial;
+
+  	player.save(function(err, player){
+	  if(err){ return next(err); }
+
+	  res.json(newInitial);
+	});
+  });
+});
+
+router.post('/profile/color', auth, function(req, res, next) {
+  playerFromRequest(req, function(player) {
+
+  	var newColor = req.body.color;
+  	player.color = newColor;
+
+  	player.save(function(err, player){
+	  if(err){ return next(err); }
+
+	  res.json(newColor);
+	});
   });
 });

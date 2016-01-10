@@ -42,19 +42,31 @@ luna
         player: null
       };
 
-      o.create = function(player) {
-        return $http.post('/profile', player).success(function(data){
-          o.player = data;
-        });
-      };
-
       o.get = function() {
         return $http.get('/profile', {
           headers: {Authorization: 'Bearer '+auth.getToken()}
         }).then(function(res){
-          console.log(res.data);
           o.player = res.data;
           return res.data;
+        });
+      };
+
+      o.initialUpdate = function(initial, callback) {
+        return $http.post('/profile/initial', {initial: initial}, {
+          headers: {Authorization: 'Bearer '+auth.getToken()}
+        }).then(function(res){
+          o.player.initial = res.data;
+          callback(res.data);
+        });
+
+      };
+
+      o.colorUpdate = function(color, callback) {
+        return $http.post('/profile/color', {color: parseInt(color)}, {
+          headers: {Authorization: 'Bearer '+auth.getToken()}
+        }).then(function(res){
+          o.player.color = res.data;
+          callback(res.data);
         });
       };
 

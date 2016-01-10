@@ -1,14 +1,66 @@
-#profile-main .pmo-pic .pmop-message .dropdown-menu textarea {
-  width: 100%;
-  height: 95px;
-  border: 0;
-  resize: none;
-  padding: 10px 19px;
+@media (min-width: 768px) and (min-width: 768px) {
+  #profile-main .pmo-pic .profile-avatar {
+    position: relative;
+    width: 80%;
+    border-radius: 50%;
+    color: #FFF;
+    text-align: center;
+    font-size: 400%;
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-bottom: 15px;
+    padding: 0 !important;
+    text-transform: uppercase;
+  }
+
+  #profile-main .pmo-pic .profile-avatar:before {
+    display: block;
+    content: "";
+    width: 100%;
+    padding-top: 36%;
+  }
+
+  #profile-main .pmo-pic .profile-avatar:after {
+    display: block;
+    content: "";
+    width: 100%;
+    padding-top: 36%;
+  }
+
+  #profile-main .pmo-pic .profile-avatar > .content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  #profile-main .pmo-pic .profile-avatar > .content span:before {
+    content: "1";
+  }
+
+  #profile-main .pmo-pic .profile-avatar > .content span:after {
+    content: "1";
+  }
 }
 
-#profile-main .pmo-pic .pmop-message .dropdown-menu button {
-  bottom: 5px;
-  left: 88px;
+@media (min-width: 768px) and (min-width: 768px) {
+  #profile-main .pmo-pic .pmo-stat {
+    background: #FFC107;
+    padding-bottom: 15px;
+  }
+}
+
+@media (min-width: 768px) and (min-width: 768px) {
+  #profile-main .pmo-pic .pmop-edit {
+    width: 100%;
+    opacity: 0;
+    filter: alpha(opacity=0);
+  }
+
+  #profile-main .pmo-pic .pmop-edit i {
+    margin-right: 4px;
+  }
 }
 
 #profile-main .pmb-block {
