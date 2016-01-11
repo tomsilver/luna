@@ -10,7 +10,6 @@ luna
                 abstract: true,
                 url: '/home',
                 templateUrl: 'views/home.html',
-                controller: 'homeCtrl',
                 onEnter: ['$state', 'auth', function($state, auth){
                   if(!auth.isLoggedIn()){
                     $state.go('login');

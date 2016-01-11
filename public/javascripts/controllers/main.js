@@ -3,7 +3,13 @@ luna
     // Base controller for common functions
     // =========================================================================
 
-    .controller('lunaCtrl', function($timeout, $state, $scope){
+    .controller('lunaCtrl', [
+        '$timeout',
+        '$state',
+        '$scope',
+        '$location',
+        'games',
+        function($timeout, $state, $scope, $location, games){
         
         // Detect Mobile Browser
         if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
@@ -41,13 +47,71 @@ luna
             'orange',
             'blue',
             'purple'
-        ]
+        ];
 
         this.skinSwitch = function (color) {
             this.currentSkin = color;
-        }
+        };
+
+        /* put games here so alerts can access */
+
+        $scope.currentOrPast = 'Current';
+        $scope.games = [];
+        $scope.notifiedGamesCount = 0;
+
+        $scope.getCurrentGames = function(callback) {
+            games.getCurrentGames(function() {
+                $scope.games = games.currentGames;
+                $scope.notifiedGames = games.notifiedGames;
+                if (!$scope.silenceNotifs)
+                    $scope.notifiedGamesCount = games.notifiedGames.length;
+                $scope.currentOrPast = 'Current';
+                callback();
+            });
+        };
+
+        $scope.getPastGames = function(callback) {
+            games.getPastGames(function() {
+                $scope.games = games.pastGames;
+                $scope.currentOrPast = 'Past';
+                callback();
+            });
+        };
+
+        $scope.newGame = function() {
+            games.create(function(newGame) {
+                $location.path('/home/'+newGame._id);
+                $scope.getCurrentGames();
+            });
+        };
+
+        $scope.findMyTurnGame = function(callback) {
+            games.findMyTurnGame(function(myTurnGame) {
+                callback(myTurnGame);
+            });
+        };
+
+        $scope.goToNextGame = function() {
+            $scope.findMyTurnGame(function(myTurnGame) {
+                if (myTurnGame)
+                    $location.path('/home/'+myTurnGame._id);
+                else
+                    $scope.newGame();
+            });
+        };
+
+        $scope.hideNotifications = function() {
+            $scope.silenceNotifs = true;
+            $scope.notifiedGamesCount = 0;
+        };
+
+        $scope.clearNotifications = function() {
+            games.clearNotifications(function () {
+                $scope.notifiedGamesCount = 0;
+            });
+        };
     
-    })
+    }])
 
     // =========================================================================
     // Header
@@ -59,6 +123,7 @@ luna
           $scope.isLoggedIn = auth.isLoggedIn;
           $scope.currentUser = auth.currentUser;
           $scope.logOut = auth.logOut;
+
     }])
 
     //=================================================
@@ -190,53 +255,6 @@ luna
     //=================================================
     // Game
     //=================================================
-    .controller('homeCtrl', [
-        '$scope',
-        '$location',
-        'games',
-        function($scope, $location, games){
-
-        $scope.currentOrPast = 'Current';
-
-        $scope.getCurrentGames = function(callback) {
-            games.getCurrentGames(function() {
-                $scope.games = games.currentGames;
-                $scope.currentOrPast = 'Current';
-                callback();
-            });
-        };
-
-        $scope.getPastGames = function(callback) {
-            games.getPastGames(function() {
-                $scope.games = games.pastGames;
-                $scope.currentOrPast = 'Past';
-                callback();
-            });
-        };
-
-        $scope.newGame = function() {
-            games.create(function(newGame) {
-                $location.path('/home/'+newGame._id);
-                $scope.getCurrentGames();
-            });
-        };
-
-        $scope.findMyTurnGame = function(callback) {
-            games.findMyTurnGame(function(myTurnGame) {
-                callback(myTurnGame);
-            });
-        };
-
-        $scope.goToNextGame = function() {
-            $scope.findMyTurnGame(function(myTurnGame) {
-                if (myTurnGame)
-                    $location.path('/home/'+myTurnGame._id);
-                else
-                    $scope.newGame();
-            });
-        };
-    }])
-
     .controller('newCtrl', [
         '$scope',
         '$location',

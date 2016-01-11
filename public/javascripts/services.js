@@ -81,6 +81,7 @@ luna
       var o = {
         currentGames: [],
         pastGames: [],
+        notifiedGames: [],
         current: true
       };
 
@@ -135,10 +136,13 @@ luna
       o.getCurrentGames = function(callback) {
         o.current = true;
         o.currentGames = [];
+        o.notifiedGames = [];
         o.getAll(function(games) {
           for (var i=0; i<games.length; i++) {
             if (games[i].active)
               o.currentGames.push(games[i]);
+            if (games[i].notif)
+              o.notifiedGames.push(games[i]);
           }
           callback();
         });
@@ -154,6 +158,15 @@ luna
           }
           callback();
         });
+      };
+
+      o.clearNotifications = function(callback) {
+        o.notifiedGames = [];
+        return $http.delete('/notifs', {
+          headers: {Authorization: 'Bearer '+auth.getToken()}
+        }).success(function(data){
+          callback();
+        });;
       };
 
       o.create = function(callback) {

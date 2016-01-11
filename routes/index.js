@@ -105,6 +105,10 @@ var playerNum = function(player, game) {
 
 };
 
+var opNum = function(player, game) {
+	return playerNum(player, game) == 2 ? 1 : 2;
+}
+
 /* make sure player is in game (not currently used) */
 var checkMyGame = function(player, game) {
 	return playerNum(player, game) > 0;
@@ -165,6 +169,7 @@ var individualizeGame = function(player, game, callback) {
 	var smartsRating = 'Not set';
 	var opSmartsRating = null;
 	var oldSmartsRating = 'Not set';
+	var notif = game['notif'+String(pNum)];
 
 
 	if (phase > 1) {
@@ -203,7 +208,8 @@ var individualizeGame = function(player, game, callback) {
 		active: active,
 		smartsRating: smartsRating,
 		opSmartsRating: opSmartsRating,
-		oldSmartsRating: oldSmartsRating
+		oldSmartsRating: oldSmartsRating,
+		notif: notif
 	};
 
 	callback(o);
@@ -329,6 +335,22 @@ router.get('/home/:game/deactivate', auth, function(req, res) {
   });
 });
 
+var saveGameInMongo = function(player, game, callback) {
+	var op = opNum(player, game);
+	game['notif'+String(op)] = true;
+
+	game.save(function(err, game) {
+	  if(err){ return next(err); }
+	  // To avoid race condition, atomically update phase
+	  Game.findByIdAndUpdate(
+		game._id,
+		{ $inc: { phase : 1} },
+		{ new: true }, function(err, game) {
+			callback(game);
+	  });
+	});
+};
+
 /* interview */
 router.post('/home/:game/interview', auth, function(req, res, next) {
   var questionInputs = req.body.questions;
@@ -337,18 +359,10 @@ router.post('/home/:game/interview', auth, function(req, res, next) {
 
   var saveGame = function(player) {
   	req.game['questions'+String(playerNum(player, req.game))] = questions;
-  	req.game.save(function(err, game) {
-	  if(err){ return next(err); }
-	  // To avoid race condition, atomically update phase
-	  Game.findByIdAndUpdate(
-		req.game._id,
-		{ $inc: { phase : 1} },
-		{ new: true }, function(err, game) {
+  	saveGameInMongo(player, req.game, function(game) {
 		individualizeGame(player, game, function(indvGame) {
 			res.json(indvGame);
 		});
-	  });
-
 	}); 
   };
 
@@ -393,19 +407,11 @@ router.post('/home/:game/response', auth, function(req, res, next) {
 
   var saveGame = function(player) {
   	req.game['responses'+String(playerNum(player, req.game))] = responses;
-  	req.game.save(function(err, game) {
-	  if(err){ return next(err); }
-	  // To avoid race condition, atomically update phase
-	  Game.findByIdAndUpdate(
-		req.game._id,
-		{ $inc: { phase : 1} },
-		{ new: true }, function(err, game) {
+  	saveGameInMongo(player, req.game, function(game) {
 		individualizeGame(player, game, function(indvGame) {
 			res.json(indvGame);
 		});
 	  });
-
-	}); 
   };
 
   var saveResponses = function(player) {
@@ -561,13 +567,7 @@ router.post('/home/:game/guess', auth, function(req, res, next) {
 
   var saveGame = function(player) {
   	req.game['guess'+String(playerNum(player, req.game))] = guess;
-  	req.game.save(function(err, game) {
-	  if(err){ return next(err); }
-	  // To avoid race condition, atomically update phase
-	  Game.findByIdAndUpdate(
-		req.game._id,
-		{ $inc: { phase : 1} },
-		{ new: true }, function(err, game) {
+  	saveGameInMongo(player, req.game, function(game) {
 		if (game.phase == 6) {
 		  finishGame(game, function(game) {
 		    individualizeGame(player, game, function(indvGame) {
@@ -581,7 +581,6 @@ router.post('/home/:game/guess', auth, function(req, res, next) {
 		  });
 		}
 	  });
-	}); 
   };
 
   playerFromRequest(req, function(player) {
@@ -589,6 +588,28 @@ router.post('/home/:game/guess', auth, function(req, res, next) {
   });
 });
 
+/* notifications */
+router.delete('/notifs', auth, function(req, res, next) {
+  playerFromRequest(req, function(player) {
+  	Game.update({
+		'player1':player._id
+	  }, {
+  		$set: { notif1: false }
+	  }, {
+		multi: true
+	  }, function() {
+	  Game.update({
+		 'player2':player._id
+		}, {
+	   		$set: { notif2: false }
+		}, {
+			multi: true
+		}, function() {
+			res.json(true);
+		});
+	  });
+  });
+});
 
 /* profile */
 router.get('/profile', auth, function(req, res) {

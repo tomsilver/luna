@@ -21,7 +21,9 @@ var GameSchema = new mongoose.Schema({
   smartsRating1: Number,
   smartsRating2: Number,
   newSmartsRating1: Number,
-  newSmartsRating2: Number
+  newSmartsRating2: Number,
+  notif1: { type: Boolean, default: false },
+  notif2: { type: Boolean, default: false }
 });
 
 mongoose.model('Game', GameSchema);

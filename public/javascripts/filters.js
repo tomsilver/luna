@@ -11,6 +11,14 @@ angular.module('phaseFilters', []).filter('phaseName', function() {
     }
     return 'Game Complete';
   };
+})
+
+.filter('phasePerc', function() {
+  return function(phase) {
+    if (phase >= 6)
+        return 100;
+    return 100*phase/6;
+  }
 });
 
 angular.module('turnFilters', []).filter('turnMessage', function() {

@@ -28,7 +28,7 @@
 
             <div class="pmo-block pmo-contact hidden-xs">
                 <ul>
-                    <li><i class="zmdi zmdi-lamp"></i> Smarts Rating: {{ smartsRating }}</li>
+                    <li><i class="zmdi zmdi-lamp"></i> Smarts Rating: {{ smartsRating | number:2 }}</li>
                     <li><i class="zmdi zmdi-mood"></i> Luna Game Wins: {{ numWins }}</li>
                     <li><i class="zmdi zmdi-calendar"></i> Joined {{ joinDate | date:'longDate' }}</li>
                 </ul>
@@ -81,7 +81,7 @@
                             <div class="clearfix">
                                 <div class="count">
                                     <small>Highest Smarts Rating</small>
-                                    <h2>{{ maxRating }}</h2>
+                                    <h2>{{ maxRating | number:2 }}</h2>
                                 </div>
                             </div>
                         </div>

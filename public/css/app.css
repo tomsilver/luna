@@ -8913,6 +8913,7 @@ body:not(.sw-toggled) #sidebar {
   font-size: 11px;
   margin-top: 20px;
   color: #828282;
+  cursor: pointer;
 }
 a.lv-footer:hover {
   color: #050505;
