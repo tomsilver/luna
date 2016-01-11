@@ -165,7 +165,7 @@ var individualizeGame = function(player, game, callback) {
 	var turn = getTurn(game, pNum);
 	var _id = game._id;
 	var updateDate = game.updateDate;
-	var active = game['active'+String(pNum)];
+	var active = game.active;
 	var smartsRating = 'Not set';
 	var opSmartsRating = null;
 	var oldSmartsRating = 'Not set';
@@ -215,6 +215,39 @@ var individualizeGame = function(player, game, callback) {
 	callback(o);
 };
 
+var getAllGames = function(player, callback) {
+	Game.find({ $or:
+		[ {'player1':player._id}, 
+		  {'player2':player._id} ]
+		},
+		function (err, games){
+	    if (err) { 
+	    	return next(err); 
+	    }
+	    callback(games);
+	});
+};
+
+
+var getCurrentOpponents = function(player, callback) {
+	var ops = [];
+	getAllGames(player, function(games) {
+		for (var i=0; i<games.length; i++)
+		{
+			if (games[i].active) {
+				if (playerNum(player, games[i]) == 1) {
+					if (games[i].player2)
+						ops.push(games[i].player2);
+				}
+				else {
+					ops.push(games[i].player1);
+				}
+			}
+		}
+		callback(ops);
+	});
+};
+
 
 /* game routes */
 /* new game */
@@ -227,40 +260,51 @@ router.post('/home', auth, function(req, res, next) {
 	    req.player = player;
 
 		/* first check if there are any open games */
-		var query = {"player2": null, "player1": { $ne: player }};
-		var update = {
-	     	$set: { phase: 1, 
-	     		    player2: player,
-	     		    initial1: myInitial,
-	     		    color1: myColor 
-	     		  }
-		};
-		var options = { new: true };
-		Game.findOneAndUpdate(query, update, options, function(err, game) {
-		  if (err) {
-		    console.log('got an error');
-		    console.log(err);
-		  }
-		  /* no open games, so create a new one */
-		  if (game === null && typeof game === "object") {
-		  	game = new Game({
-		  					 player1: player, 
-		  					 player2: null,
-		  					 initial2: myInitial,
-		  					 color2: myColor
-		  					});
-		  	game.save(function(err, game){
-			    if(err){ return next(err); }
-			    	individualizeGame(player, game, function(indvGame) {
-			    		res.json(indvGame);
-			    	});    
-			  });
-		  }
-		  else {
-		  	individualizeGame(player, game, function(indvGame) {
-			   	res.json(indvGame);
-			});
-		  }
+		var excludes = [{"player2": null}, {"player1": { $ne: player }}];
+		
+		/* exclude active opponents */
+		getCurrentOpponents(player, function(opponents){
+			var exclude;
+			for (var i=0; i<opponents.length; i++) {
+				exclude = {"player1": { $ne: opponents[i]}};
+				excludes.push(exclude);
+			}
+
+			var query = { $and: excludes };
+			var update = {
+		     	$set: { phase: 1, 
+		     		    player2: player,
+		     		    initial1: myInitial,
+		     		    color1: myColor 
+		     		  }
+			};
+			var options = { new: true };
+			Game.findOneAndUpdate(query, update, options, function(err, game) {
+			  if (err) {
+			    console.log('got an error');
+			    console.log(err);
+			  }
+			  /* no open games, so create a new one */
+			  if (game === null && typeof game === "object") {
+			  	game = new Game({
+			  					 player1: player, 
+			  					 player2: null,
+			  					 initial2: myInitial,
+			  					 color2: myColor
+			  					});
+			  	game.save(function(err, game){
+				    if(err){ return next(err); }
+				    	individualizeGame(player, game, function(indvGame) {
+				    		res.json(indvGame);
+				    	});    
+				  });
+			  }
+			  else {
+			  	individualizeGame(player, game, function(indvGame) {
+				   	res.json(indvGame);
+				});
+			  }
+		    });
 		});
 	});
 });
@@ -268,23 +312,15 @@ router.post('/home', auth, function(req, res, next) {
 /* get all games for a player */
 router.get('/home', auth, function(req, res, next) {
 	playerFromRequest(req, function(player){
-		Game.find({ $or:
-			[ {'player1':player._id}, 
-			  {'player2':player._id} ]
-			},
-			function (err, games){
-		    if (err) { 
-		    	return next(err); 
-		    }
-		    var indvGames = [];
+		getAllGames(player, function(games){
+			var indvGames = [];
 		    for (var i=0; i<games.length; i++) {
 		    	individualizeGame(player, games[i], function(indvGame) {
 		    		indvGames.push(indvGame);
 		    	});
 		    }
-			  res.json(indvGames);
-			}
-		);
+			res.json(indvGames);
+		});
 	});
 });
 
@@ -319,20 +355,13 @@ router.get('/home/:game', auth, function(req, res) {
 /* deactivate */
 router.get('/home/:game/deactivate', auth, function(req, res) {
 	playerFromRequest(req, function(player) {
-  	  req.game['active'+String(playerNum(player, req.game))] = false;
-	  req.game.save(function(err, game) {
-	  if(err){ return next(err); }
-	  // To avoid race condition, atomically update phase
-	  Game.findByIdAndUpdate(
-		req.game._id,
-		{ $inc: { phase : 1} },
-		{ new: true }, function(err, game) {
+  	  req.game.active = false;
+	  saveGameInMongo(player, req.game, function(game) {
 		individualizeGame(player, game, function(indvGame) {
 			res.json(indvGame);
 		});
 	  });
 	});
-  });
 });
 
 var saveGameInMongo = function(player, game, callback) {

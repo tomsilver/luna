@@ -106,6 +106,7 @@ luna
         };
 
         $scope.clearNotifications = function() {
+            $scope.notifiedGames = [];
             games.clearNotifications(function () {
                 $scope.notifiedGamesCount = 0;
             });
