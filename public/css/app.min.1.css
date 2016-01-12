@@ -13327,6 +13327,7 @@ input:focus {
 .form-control {
   box-shadow: none !important;
   resize: none;
+  padding: 4px;
 }
 
 .form-control:active,
@@ -13341,7 +13342,6 @@ input:focus {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  padding: 0;
 }
 
 .form-control:not(.fc-alt).auto-size {
@@ -14916,7 +14916,8 @@ a.thumbnail.active {
   background: #F8F8F8;
   border-right: 1px solid #EEE;
   padding-bottom: 50px;
-  height: 100%;
+  min-height: 450px;
+  max-height: 100%;
   width: 240px;
   -webkit-transition: all;
   -o-transition: all;
@@ -15139,7 +15140,7 @@ a.thumbnail.active {
 }
 
 .four-zero {
-  background: #00BCD4;
+  background: #607D8B;
   box-shadow: 0 1px 11px rgba(0, 0, 0, 0.27);
   border-radius: 2px;
   position: absolute;

@@ -17,7 +17,7 @@
                 </div>
             </div>
 
-            <div class="listview lv-user m-t-20">
+            <div class="listview lv-user m-t-20" style="max-height: 300px; overflow-y: scroll;">
 
                 <div class="lv-item media" ng-repeat="game in games  | orderBy: '-updateDate'" data-ui-sref-active="active">
                     <a data-ui-sref="home.game({id: game._id})"  ui-sref-opts="{reload: 'home.game'}">

@@ -4,7 +4,7 @@
             <h2>Select from previous questions.</h2>
         </div>
 
-        <div class="lv-body" style="padding-bottom:50px;">
+        <div class="lv-body" style="padding-bottom:50px; max-height: 350px; overflow-y: scroll;">
             <div class="row media" ng-repeat="q in oldQuestions | orderBy: '-numWins'">
                 <div class="checkbox pull-left" ng-click="o.addOldQuestion(q.question)">
                     <label>

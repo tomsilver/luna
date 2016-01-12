@@ -734,3 +734,8 @@ router.post('/profile/color', auth, function(req, res, next) {
 	});
   });
 });
+
+/* error handling */
+router.get('*', function(req, res){
+  res.render('404');
+});

@@ -383,7 +383,7 @@ luna
         };
 
         $scope.downShift = function(idx) {
-            if (idx >= $scope.questions.length-1)
+            if (idx >= $scope.N.length-1)
                 return;
             var tempQuestion = $scope.questions[idx];
             $scope.questions[idx] = $scope.questions[idx+1];

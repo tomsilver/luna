@@ -6,8 +6,10 @@
 	    <div class="card-header" ng-show="phase >= 6 || !active">
 	        <h3>Game Outcome: <strong>{{ outcome | outcomeFilter }}</strong></h3>
 	        <h3>Your New Smarts Rating: <strong>{{ smartsRating | number:2 }}</strong></h3>
-	        <h2>Actual Opponent Smart Rating: <strong>{{ opSmartsRating | number:2 }}</strong> (You guessed {{ myGuess }})</h2>
-	        <h2>Your Opponent’s Guess of Your Rating: <strong>{{ opGuess }}</strong> (Your rating was {{ oldSmartsRating | number:2 }})</h2>
+	        <h2 ng-show="opSmartsRating">Actual Opponent Smart Rating: <strong>{{ opSmartsRating | number:2 }}</strong> (You guessed {{ myGuess }})</h2>
+	        <h2 ng-hide="opSmartsRating">Actual Opponent Smart Rating: <strong>not set</strong> (You guessed {{ myGuess }})</h2>
+	        <h2 ng-show="oldSmartsRating">Your Opponent’s Guess of Your Rating: <strong>{{ opGuess }}</strong> (Your rating was {{ oldSmartsRating }})</h2>
+	        <h2 ng-hide="oldSmartsRating">Your Opponent’s Guess of Your Rating: <strong>{{ opGuess }}</strong> (Your rating was not set)</h2>
 	    </div>
 	    <small ng-show="!active">
             This game has been deactivated. This occurs when all phases are completed, a player resigns or a game times out.
