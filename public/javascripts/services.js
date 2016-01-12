@@ -234,6 +234,28 @@ luna
       return o;
     }])
 
+    //==============================================
+    // Questions
+    //==============================================
+
+    .factory('questions', ['$http', 'auth', function($http, auth){
+      var o = {
+        oldQuestions: []
+      };
+
+      o.findOldQuestions = function(callback) {
+        return $http.get('/oldquestions', {
+          headers: {Authorization: 'Bearer '+auth.getToken()}
+        }).success(function(data){
+          o.oldQuestions = data;
+          if (callback)
+            callback(data);
+        });
+      };
+
+      return o;
+    }])
+
 
     //==============================================
     // Auth

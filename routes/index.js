@@ -339,10 +339,10 @@ router.param('game', function(req, res, next, id) {
 router.get('/home/:game', auth, function(req, res) {
 	playerFromRequest(req, function(player) {
   		req.game
-	   	  .populate('questions1')
-	   	  .populate('questions2')
-	   	  .populate('responses1')
-	   	  .populate('responses2', function(err, game) {
+	   	  .populate('questions1.question')
+	   	  .populate('questions2.question')
+	   	  .populate('responses1.response')
+	   	  .populate('responses2.response', function(err, game) {
 	    	if (err) { return next(err); }
 
 	    	individualizeGame(player, game, function(indvGame) {
@@ -387,7 +387,14 @@ router.post('/home/:game/interview', auth, function(req, res, next) {
   var i = 0;
 
   var saveGame = function(player) {
-  	req.game['questions'+String(playerNum(player, req.game))] = questions;
+  	var qs = [];
+  	for (var i=0; i<questions.length; i++){
+  		qs.push({
+  			question: questions[i],
+  			questionNum: i
+  		});
+  	}
+  	req.game['questions'+String(playerNum(player, req.game))] = qs;
   	saveGameInMongo(player, req.game, function(game) {
 		individualizeGame(player, game, function(indvGame) {
 			res.json(indvGame);
@@ -403,21 +410,34 @@ router.post('/home/:game/interview', auth, function(req, res, next) {
   		saveGame(player);
   	else {
   		var nextQuestion = questionInputs.shift();
-	  	
-	  	questionInput = {
+
+  		questionInput = {
 	  		player: player,
-	  		questionNum: i,
 	  		question: nextQuestion
 	  	}
+	  	
+  		/* see if this question has already been asked */
+  		Question.findOne(questionInput, function(err, question) {
+		    if (err) { return next(err); }
 
-	  	question = new Question(questionInput);
+		    /* new question */
+		    if (question === null && typeof question === "object") {
+		    	question = new Question(questionInput);
+		    }
 
-	  	question.save(function(err, question){
-	    	if(err){ return next(err); }
-			questions.push(question);
-			i++;
-	  		saveQuestions(player);	
-	  	});
+		    /* old question */
+		    else {
+		    	question.numGames += 1;
+		    }
+
+		    question.save(function(err, question){
+		    	if(err){ return next(err); }
+				questions.push(question);
+				i++;
+		  		saveQuestions(player);	
+		  	});
+
+		});
   	}
   }
 
@@ -435,7 +455,14 @@ router.post('/home/:game/response', auth, function(req, res, next) {
   var i = 0;
 
   var saveGame = function(player) {
-  	req.game['responses'+String(playerNum(player, req.game))] = responses;
+  	var rs = [];
+  	for (var i=0; i<responses.length; i++){
+  		rs.push({
+  			response: responses[i],
+  			questionNum: i
+  		});
+  	}
+  	req.game['responses'+String(playerNum(player, req.game))] = rs;
   	saveGameInMongo(player, req.game, function(game) {
 		individualizeGame(player, game, function(indvGame) {
 			res.json(indvGame);
@@ -454,7 +481,6 @@ router.post('/home/:game/response', auth, function(req, res, next) {
 	  	
 	  	responseInput = {
 	  		player: player,
-	  		questionNum: i,
 	  		response: nextResponse
 	  	}
 
@@ -481,23 +507,36 @@ router.post('/home/:game/guess', auth, function(req, res, next) {
   var updatePlayer = function(player, callback) {
   	Player.findById(player._id)
   		.exec(function(err, savedPlayer) {
-  			console.log(savedPlayer);
   			Object.assign(savedPlayer, player);
-  			console.log(savedPlayer);
   			savedPlayer.save(function(err, savedPlayer) {
-  				console.log(err);
   				if(err){ return next(err); }
 		  		callback();
   			});
   		});
   };
 
+  var updateQuestions = function(questions, callback) {
+  	if (questions.length == 0)
+  		callback();
+  	else {
+  		var nextQuestion = questions.pop();
+  		Question
+  			.findById(nextQuestion.question._id)
+  			.exec(function(err, savedQuestion) {
+  				savedQuestion.numWins += 1;
+  				savedQuestion.save(function(err, savedQuestion) {
+  					updateQuestions(questions, callback);
+  				});
+  			})
+  	}
+  };
+
   var finishGame = function(game, callback) {
-  	console.log("attempting to finish game");
-  	console.log(game._id);
   	Game.findById(game._id)
   		.populate('player1')
   		.populate('player2')
+  		.populate('questions1.question')
+  		.populate('questions2.question')
   		.exec(function(err, game) {
   		game.player1.guessHistory.push(game.guess2);
   		game.player2.guessHistory.push(game.guess1);
@@ -546,11 +585,11 @@ router.post('/home/:game/guess', auth, function(req, res, next) {
 		else {
 			if (err1 > err2) {
 				game.outcome = 2;
-				isWinner1 = true;
+				isWinner2 = true;
 			}
 			else if (err2 > err1) {
 				game.outcome = 1;
-				isWinner2 = true;
+				isWinner1 = true;
 			}
 			else {
 				game.outcome = 3;
@@ -560,12 +599,15 @@ router.post('/home/:game/guess', auth, function(req, res, next) {
 		game.player1.numGames += 1;
 		game.player2.numGames += 1;
 
+		var questionsToUpdate = [];
+
 		if (isWinner1) {
 			game.player1.numWins += 1;
 			game.player1.winningStreak += 1;
 			if (game.player1.winningStreak > game.player1.winningStreakRecord) {
 				game.player1.winningStreakRecord = game.player1.winningStreak;
 			}
+			questionsToUpdate = game.questions1;
 		}
 		else {
 			game.player1.winningStreak = 0;
@@ -577,6 +619,7 @@ router.post('/home/:game/guess', auth, function(req, res, next) {
 			if (game.player2.winningStreak > game.player2.winningStreakRecord) {
 				game.player2.winningStreakRecord = game.player2.winningStreak;
 			}
+			questionsToUpdate = game.questions2;
 		}
 		else {
 			game.player2.winningStreak = 0;
@@ -586,7 +629,9 @@ router.post('/home/:game/guess', auth, function(req, res, next) {
 	  		if(err){ return next(err); }
 	  		updatePlayer(game.player1, function(){
 	  		  updatePlayer(game.player2, function() {
-	  		    callback(game);
+	  		  	updateQuestions(questionsToUpdate, function() {
+	  		  		callback(game);
+	  		  	});
 	  		  });
 	  		});
 	  	});
@@ -638,6 +683,17 @@ router.delete('/notifs', auth, function(req, res, next) {
 		});
 	  });
   });
+});
+
+/* old questions */
+router.get('/oldquestions', auth, function(req, res) {
+  playerFromRequest(req, function(player) {
+  	Question
+  	  .find({ player: player })
+  	  .exec(function(err, questions) {
+  	  	res.json(questions);
+  	  });
+  });	
 });
 
 /* profile */

@@ -1,0 +1,25 @@
+<div class="col-sm-6">
+    <div class="card">
+        <div class="card-header">
+            <h2>Select from previous questions.</h2>
+        </div>
+
+        <div class="lv-body" style="padding-bottom:50px;">
+            <div class="row media" ng-repeat="q in oldQuestions | orderBy: '-numWins'">
+                <div class="checkbox pull-left" ng-click="o.addOldQuestion(q.question)">
+                    <label>
+                        <i class="zmdi zmdi-plus" style="font-size: 18px;"></i>
+                    </label>
+                </div>
+                <div class="media-body">
+                    <div class="lv-title">{{q.question}}</div>
+
+                    <ul class="lv-attrs">
+                        <li>Wins: {{ q.numWins }}</li>
+                        <li>Total: {{ q.numGames }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

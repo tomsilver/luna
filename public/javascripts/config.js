@@ -48,6 +48,18 @@ luna
                   }
             })
 
+            //Old Questions
+            .state('home.game.interview.oldquestions', {
+                url: '/oldquestions',
+                templateUrl: 'views/oldquestions.html',
+                controller: 'oldquestionsCtrl',
+                resolve: {
+                    game: ['$stateParams', 'games', function($stateParams, games) {
+                      return games.get($stateParams.id);
+                    }]
+                  }
+            })
+
             //Response
             .state('home.game.response', {
                 url: '/response',

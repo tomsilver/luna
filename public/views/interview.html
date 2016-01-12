@@ -1,23 +1,29 @@
-<div class="card">
+<div class="card" ng-class="{'col-sm-6': o.oldQuestionsActive, 'col-sm-12': !o.oldQuestionsActive}">
     <div class="card-header">
-        <h2>Interview Phase<small>Please enter 5 questions for the other player.
-</small></h2>
+        <h2>Interview Phase<small>Please enter {{ N.length }} questions for the other player.
+		</small></h2>
+		<button data-ui-sref="home.game.interview.oldquestions({ id: gameID })" class="btn btn-primary btn-xs bgm-bluegray" ng-show="!submitted && active">Select from previous questions</button>
     </div>
 
     <div class="card-body card-padding">
         <form class="form-horizontal" role="form" ng-submit="submitQuestions()">
             <div class="form-group">
-            	<div ng-repeat="n in N">
-	                <label for="question{{ n }}" class="col-sm-1 control-label">{{ n+1 }}.</label>
-	                <div class="col-sm-11">
+	        	<div ng-repeat="n in N" class="row">
+                	<label for="question{{ n }}" class="col-sm-1 control-label" >
+                		<i class="zmdi zmdi-triangle-up" ng-click="upShift(n)" style="cursor:pointer;" ng-show="!submitted && active"></i><i class="zmdi zmdi-triangle-down" ng-click="downShift(n)" style="cursor:pointer;" ng-show="!submitted && active"></i>
+                	</label>
+	                <div class="col-sm-10">
 	                    <div class="fg-line">
 	                        <input type="text" class="form-control input-sm" ng-model="questions[n]" placeholder="Question {{ n+1 }}" ng-readonly="submitted || !active">
 	                    </div>
 	                </div>
+	                <div class="col-sm-1">
+	                	<i class="zmdi zmdi-close" ng-click="eraseQuestion(n)" style="cursor:pointer;" ng-show="!submitted && active"></i>
+	                </div>
 	            </div>
-            </div>
+	        </div>
             <div ng-show="!submitted && active">
-	            <div class="form-group">
+	            <div class="form-group" style="padding-top:10px;">
 	                <div class="col-sm-offset-1 col-sm-11">
 	                    <button type="submit" class="btn btn-primary btn-sm">Submit</button>
 	                </div>
@@ -36,3 +42,5 @@
         </form>
     </div>
 </div>
+
+<data ui-view></data>

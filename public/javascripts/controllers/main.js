@@ -66,7 +66,8 @@ luna
                 if (!$scope.silenceNotifs)
                     $scope.notifiedGamesCount = games.notifiedGames.length;
                 $scope.currentOrPast = 'Current';
-                callback();
+                if (callback)
+                    callback();
             });
         };
 
@@ -74,14 +75,15 @@ luna
             games.getPastGames(function() {
                 $scope.games = games.pastGames;
                 $scope.currentOrPast = 'Past';
-                callback();
+                if (callback)
+                    callback();
             });
         };
 
         $scope.newGame = function() {
             games.create(function(newGame) {
                 $location.path('/home/'+newGame._id);
-                $scope.getCurrentGames();
+                $scope.getCurrentGames(function() {});
             });
         };
 
@@ -304,7 +306,7 @@ luna
         $scope.deactivateGame = function() {
             games.deactivate($stateParams.id, function() {
                 $scope.active = 0;
-                $scope.getPastGames();
+                $scope.getPastGames(function () {});
             });
         };
 
@@ -342,20 +344,59 @@ luna
         'game', 
         function($scope, $stateParams, growlService, games, game){
 
+        $scope.gameID = game._id;
         $scope.questions = [];
         $scope.submitted = false;
+
+        $scope.o = {};
+        $scope.o.oldQuestionsActive = false;
 
         var savedQuestions = game.questions;
 
         for (var i=0; i<savedQuestions.length; i++) {
-            $scope.questions[savedQuestions[i].questionNum] = savedQuestions[i].question;
+            $scope.questions[savedQuestions[i].questionNum] = savedQuestions[i].question.question;
 
             // player has submitted questions already
             $scope.submitted = true;
         }
 
+        $scope.o.findFirstEmptyQuestion = function(callback) {
+            for (var i = 0; i<$scope.questions.length; i++) {
+                if ($scope.questions[i] == '') {
+                    callback(i);
+                    return;
+                }
+            }
+            if ($scope.questions.length == $scope.N.length)
+                callback(-1);
+            else
+                callback($scope.questions.length);
+
+        };
+
+        $scope.upShift = function(idx) {
+            if (idx <= 0)
+                return;
+            var tempQuestion = $scope.questions[idx];
+            $scope.questions[idx] = $scope.questions[idx-1];
+            $scope.questions[idx-1] = tempQuestion;
+        };
+
+        $scope.downShift = function(idx) {
+            if (idx >= $scope.questions.length-1)
+                return;
+            var tempQuestion = $scope.questions[idx];
+            $scope.questions[idx] = $scope.questions[idx+1];
+            $scope.questions[idx+1] = tempQuestion;
+        };
+
+        $scope.eraseQuestion = function(idx) {
+            $scope.questions[idx] = '';
+        };
+
         $scope.submitQuestions = function() {
             $scope.submitted = true;
+            $scope.o.oldQuestionsActive = false;
             var questionReq = {
                 questions: $scope.questions
             };
@@ -387,11 +428,11 @@ luna
         if ($scope.phase > 1) {
 
             for (var i=0; i<opQuestions.length; i++) {
-                $scope.questions[opQuestions[i].questionNum] = opQuestions[i].question;
+                $scope.questions[opQuestions[i].questionNum] = opQuestions[i].question.question;
             }
 
             for (var i=0; i<savedResponses.length; i++) {
-                $scope.responses[savedResponses[i].questionNum] = savedResponses[i].response;
+                $scope.responses[savedResponses[i].questionNum] = savedResponses[i].response.response;
 
                 // player has submitted responses already
                 $scope.submitted = true;
@@ -433,11 +474,11 @@ luna
         if ($scope.phase > 3) {
 
             for (var i=0; i<myQuestions.length; i++) {
-                $scope.questions[myQuestions[i].questionNum] = myQuestions[i].question;
+                $scope.questions[myQuestions[i].questionNum] = myQuestions[i].question.question;
             }
 
             for (var i=0; i<opResponses.length; i++) {
-                $scope.responses[opResponses[i].questionNum] = opResponses[i].response;
+                $scope.responses[opResponses[i].questionNum] = opResponses[i].response.response;
             }
 
             if (savedGuess != null) {
@@ -483,5 +524,33 @@ luna
                 games.deactivate($stateParams.id, function() {});
 
         }
+
+    }])
+
+    // Old Questions
+    .controller('oldquestionsCtrl', [
+        '$scope',
+        '$stateParams',
+        'growlService',
+        'questions',
+        function($scope, $stateParams, growlService, questions){
+
+        $scope.oldQuestions = questions.oldQuestions;
+        
+        $scope.N = [0, 1, 2, 3, 4];
+        $scope.o.oldQuestionsActive = true;
+
+        $scope.o.addOldQuestion = function(q) {
+            $scope.o.findFirstEmptyQuestion(function(idx) {
+                if (idx < 0) {
+                    growlService.growl('Erase an interview question first', 'inverse');
+                }
+                else {
+                    $scope.questions[idx] = q;
+                }
+            });
+        };
+
+        questions.findOldQuestions();
 
     }])

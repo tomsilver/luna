@@ -20,7 +20,7 @@
                             Your Turn
                         </div>
                         <div class="lv-body">
-                            <div class="lv-item" ng-repeat="game in notifiedGames">
+                            <div class="lv-item" ng-repeat="game in notifiedGames" data-ui-sref="home.game({id : game._id})" ui-sref-opts="{reload: true}" style="cursor: pointer;">
                                 <div class="lv-title m-b-5">{{ game.phase | phaseName }}</div>
                                 <div class="progress">
                                     <div ng-class="'progress-bar bgm-{{ game.color | colorName }}'" role="progressbar" aria-valuenow="{{ game.phase | phasePerc }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ game.phase | phasePerc }}%">
