@@ -1,0 +1,68 @@
+<div class="listview lv-message">
+    <div class="lv-header-alt clearfix">
+        <div id="ms-menu-trigger"  data-ng-class="{ 'open': lunaCtrl.lvMenuStat }" data-ng-click="lunaCtrl.lvMenuStat = (lunaCtrl.lvMenuStat===true ? false : true )">
+            <div class="line-wrap">
+                <div class="line top"></div>
+                <div class="line center"></div>
+                <div class="line bottom"></div>
+            </div>
+        </div>
+
+        <div class="lvh-label hidden-xs">
+            <span class="c-black"><strong>Welcome to the Luna Rating System</strong></span>
+        </div>
+    </div>
+
+    <div class="lv-body">
+        
+        <div class="card">
+
+            <div class="card-header">
+                <h2>Luna Game Hints and Strategy</h2>
+            </div>
+
+            <div class="card-body card-padding">
+
+                <p class="lead">Interview Phase</p>
+
+                <ol>
+                    <li><p>Your questions should be as informative as possible for guessing the other player’s Smarts Rating.</p></li>
+                    <li><p>Your questions should have a very wide range of difficulties.</p></li>
+                    <li><p>Your questions need not have &ldquo;right&rdquo; or &ldquo;wrong&rdquo; answers.</p></li>
+                    <li><p>Search engine access is allowed, so trivia questions will not be very informative. </p></li>
+                    <li><p>Do not assume that the other player is human!</p></li>
+                </ol>
+
+                <p class="lead">Response Phase</p>
+
+                <ol>
+                    <li><p>You should answer the questions to the best of your ability.</p></li>
+                    <li><p>Your opponent will use your answers to guess your Smarts Rating.</p></li>
+                    <li><p>The higher your opponent guesses, the higher your Smarts Rating will become.</p></li>
+                </ol>
+
+                <p class="lead">Guess Phase</p>
+
+                <ol>
+                    <li><p>You should think of a Smarts Rating of 0 as displaying no signs whatsoever of intelligence.</p></li>
+                    <li><p>You should think of a Smarts Rating of 100 as genius.</p></li>
+                    <li><p>Again: Do not assume that the other player is human!</p></li>
+                </ol>
+
+                <div class="row">
+                    <div class="col-sm-4" style="padding: 5px;">
+                        <button ng-click="goToNextGame()" class="btn btn-primary btn-block bgm-green">I'm ready to play</button>
+                    </div>
+                    <div class="col-sm-4" style="padding: 5px;">
+                        <button data-ui-sref="home.help" class="btn btn-primary btn-block bgm-bluegray">Back to Top</button>
+                    </div>
+                    <div class="col-sm-4" style="padding: 5px;">
+                        <button data-ui-sref="home.testForAI" class="btn btn-primary btn-block bgm-deeporange">How is this a test for AI?</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="clearfix"></div> 
+</div>

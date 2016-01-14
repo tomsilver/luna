@@ -1,4 +1,4 @@
-<div class="listview lv-message" style="min-height: 450px;">
+<div class="listview lv-message">
     <div class="lv-header-alt clearfix">
         <div id="ms-menu-trigger"  data-ng-class="{ 'open': lunaCtrl.lvMenuStat }" data-ng-click="lunaCtrl.lvMenuStat = (lunaCtrl.lvMenuStat===true ? false : true )">
             <div class="line-wrap">
@@ -25,7 +25,7 @@
 
                 <ul class="dropdown-menu dropdown-menu-right">
                     <li>
-                        <a href="">Help</a>
+                        <a data-ui-sref="home.help">Help</a>
                     </li>
                     <li>
                         <a href="" ng-click="deactivateGame()">Resign Game</a>

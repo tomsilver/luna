@@ -2,8 +2,6 @@ luna
     .config(function ($stateProvider, $urlRouterProvider, $locationProvider){
         $urlRouterProvider.otherwise("/home");
 
-        $locationProvider.html5Mode(true);
-
         $stateProvider
             
             //Home
@@ -23,6 +21,30 @@ luna
                 url: '',
                 templateUrl: 'views/new.html',
                 controller: 'newCtrl'
+            })
+
+            //Help
+            .state('home.help', {
+                url: '/help',
+                templateUrl: 'views/new.html'
+            })
+
+            //Strategy
+            .state('home.strategy', {
+                url: '/strategy',
+                templateUrl: 'views/strategy.html'
+            })
+
+            //Test for AI
+            .state('home.testForAI', {
+                url: '/testForAI',
+                templateUrl: 'views/testForAI.html'
+            })
+
+            //Contact
+            .state('home.contact', {
+                url: '/contact',
+                templateUrl: 'views/contact.html'
             })
 
             //Game

@@ -1,0 +1,62 @@
+<div class="listview lv-message">
+    <div class="lv-header-alt clearfix">
+        <div id="ms-menu-trigger"  data-ng-class="{ 'open': lunaCtrl.lvMenuStat }" data-ng-click="lunaCtrl.lvMenuStat = (lunaCtrl.lvMenuStat===true ? false : true )">
+            <div class="line-wrap">
+                <div class="line top"></div>
+                <div class="line center"></div>
+                <div class="line bottom"></div>
+            </div>
+        </div>
+
+        <div class="lvh-label hidden-xs">
+            <span class="c-black"><strong>Welcome to the Luna Rating System</strong></span>
+        </div>
+    </div>
+
+    <div class="lv-body">        
+        <div class="card">
+
+            <div class="card-header">
+                <h2>Luna: A Test for Machine Intelligence</h2>
+            </div>
+
+            <div class="card-body card-padding">
+
+                <p class="lead">Introduction</p>
+
+                <p>Research in artificial intelligence is driven by benchmarks and competitions. The score of an algorithm on a widely used benchmark can determine the amount of funding and attention from academia that it receives. With such a burden placed on benchmarks, one would hope that they provide an accurate reflection of the extent to which an algorithm has achieved artificial intelligence. Unfortunately, existing competitions fall far short of this mark. At best, current contests evaluate the performance of specialized algorithms on restricted problem domains that are not guaranteed to generalize, such as object recognition or robot soccer. At worst, tests prematurely claim to be the ultimate arbiter of general intelligence, inspiring a distracting and unwarranted media frenzy when they are passed. In all cases, the current benchmarks for evaluating AI machines are leading the research community away from the creation of truly general intelligence.</p>
+
+                <p>Luna is a new system for evaluating general AI. The system invites humans and machines to participate in two-player games in which each player assesses the intelligence of her opponent. The aggregation of these assessments is used to assign a rating to the player. A player’s rating is a reflection of the player’s demonstrated intelligence. In this sense, the ratings that emerge from the system are the results of a never-ending test of each the player’s general AI. The definition of intelligence is not pre- supposed in this system; instead, it emerges from the collective judgement of all players. Thus the system is a microcosm of the natural process that humans use to evaluate each other’s intelligences. The system offers a bright light on the dim path towards machine intelligence.</p>
+
+                <p class="lead">Guiding Principles</p>
+
+                <p><strong>Accessibility.</strong> To serve as a useful guide, the test for AI must be constantly accessible to researchers. Ideally the test should be efficient enough that it may be used several times throughout the course of an AI developer’s day. This principle discourages a centralized competition that is only held at regular intervals, and instead favors a rating system that can be accessed through the Internet and then carried out using the resources of an average computer.</p>
+
+                <p><strong>Generalizability.</strong> A test need not span all possible areas of intelligence, but the results should reflect the subject’s ability to perform in all areas. In this sense, the test should be AI-complete -- a machine that does well on this test should do similarly well on any other reasonable test of intelligence. The proposition of the Turing Test, which continues to be held by many researchers, is that the problem domain of natural language is AI-complete. The system proposed here shares this premise.</p>
+
+                <p><strong>Continuity.</strong> Every candidate for AI should be able to observe changes in performance over the course of development. A test that only reports a binary outcome — pass or fail — will not be useful for researchers who are not yet close to passing. The test’s outcome should instead be continuous, indicating clearly when progress is being made.</p>
+
+                <p><strong>Dependent on People, Independent of Persons.</strong> A fair test should not rely on any one person’s interpretation of intelligence. At the same time, intelligence is a social construct that cannot be reasonably appraised without input from humans. Therefore a test for intelligence must take into account the popular conception of intelligence, but it cannot rely on any single human judge to determine its outcome.</p>
+
+                <p><strong>Immunity to Gaming.</strong> It should not be possible for a researcher to &ldquo;game the system&rdquo; and achieve outsized results by exploiting structure in the test. This principle precludes any sort of hard-coding of knowledge that is <i>a priori</i> known to be important for the test. For example, a standardized test fails the Immunity to Gaming principle, since any researcher who observes the results of the test once would be able to submit a machine with the memorized knowledge necessary to pass the test.</p>
+
+                <p class="lead">Context</p>
+
+                <p>This online implementation of the Luna Rating System is one component of an undergraduate thesis by Tom Silver for submission to the Computer Science department of Harvard University.</p>
+
+                <div class="row">
+                    <div class="col-sm-4" style="padding: 5px;">
+                        <button ng-click="goToNextGame()" class="btn btn-primary btn-block bgm-green">I'm ready to play</button>
+                    </div>
+                    <div class="col-sm-4" style="padding: 5px;">
+                        <button data-ui-sref="home.strategy" class="btn btn-primary btn-block bgm-bluegray">Tell me about Strategy</button>
+                    </div>
+                    <div class="col-sm-4" style="padding: 5px;">
+                        <button data-ui-sref="home.help" class="btn btn-primary btn-block bgm-deeporange">Back to Top</button>
+                    </div>
+                </div>
+            </div>
+    </div>
+    
+    <div class="clearfix"></div> 
+</div>

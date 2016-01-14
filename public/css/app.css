@@ -12317,6 +12317,9 @@ a.thumbnail.active {
 /*
  * For Message
  */
+.lv-message {
+  min-height: 450px;
+}
 .lv-message .lv-item {
   padding: 20px;
 }
