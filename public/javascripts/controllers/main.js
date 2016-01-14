@@ -471,6 +471,7 @@ luna
         $scope.questions = [];
         $scope.responses = [];
         $scope.submitted = false;
+        $scope.responseGrades = [];
 
         $scope.o = {};
         $scope.o.guessCalculatorActive = false;
@@ -497,11 +498,18 @@ luna
                 var changed = false;
                 for (var i=0; i<$scope.o.guessInputs.length; i++) {
                     total += $scope.o.guessInputs[i];
+                    var r = {
+                        rid: opResponses[i].response._id, 
+                        grade: $scope.o.guessInputs[i]
+                    };
+                    $scope.responseGrades.push(r);
                     if ($scope.o.guessInputs[i] != 50)
                         changed = true;
                 }
-                if (!changed)
+                if (!changed) {
                     growlService.growl("First, slide the circles to estimate a guess.");
+                    $scope.responseGrades = [];
+                }
                 else {
                     total /= $scope.o.guessInputs.length;
                     $scope.o.estimate = total;
@@ -519,6 +527,9 @@ luna
                         growlService.growl('Submitted guess!', 'inverse');
                     });
                 });
+                if ($scope.responseGrades.length) {
+                    games.saveResponseGrades($scope.responseGrades);
+                }
             };
 
         }

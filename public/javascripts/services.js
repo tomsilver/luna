@@ -229,7 +229,16 @@ luna
         }).success(function(game){
           o.retireGame(id, game, callback);
         });
-      }
+      };
+
+      o.saveResponseGrades = function(responseGrades, callback) {
+        return $http.put('/home/responseGrades', responseGrades, {
+          headers: {Authorization: 'Bearer '+auth.getToken()}
+        }).success(function(){
+          if (callback)
+            callback();
+        });
+      };
 
       return o;
     }])

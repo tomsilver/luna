@@ -352,6 +352,18 @@ router.get('/home/:game', auth, function(req, res) {
   });
 });
 
+/* save response grades */
+router.put('/home/responseGrades', auth, function(req, res) {
+	var responseGrades = req.body;
+	for (var i=0; i<responseGrades.length; i++) {
+		Response.findByIdAndUpdate(
+			responseGrades[i].rid,
+			{ $set: { grade : responseGrades[i].grade }})
+			.exec();
+	}
+	res.json(true);
+});
+
 /* deactivate */
 router.get('/home/:game/deactivate', auth, function(req, res) {
 	playerFromRequest(req, function(player) {
@@ -452,7 +464,6 @@ router.post('/home/:game/interview', auth, function(req, res, next) {
 router.post('/home/:game/response', auth, function(req, res, next) {
   var responseInputs = req.body.responses;
   var responses = [];
-  var i = 0;
 
   var saveGame = function(player) {
   	var rs = [];
@@ -489,7 +500,6 @@ router.post('/home/:game/response', auth, function(req, res, next) {
 	  	response.save(function(err, response){
 	    	if(err){ return next(err); }
 			responses.push(response);
-			i++;
 	  		saveResponses(player);	
 	  	});
   	}
