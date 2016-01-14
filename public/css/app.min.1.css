@@ -14916,7 +14916,7 @@ a.thumbnail.active {
   background: #F8F8F8;
   border-right: 1px solid #EEE;
   padding-bottom: 50px;
-  min-height: 450px;
+  min-height: 460px;
   max-height: 100%;
   width: 240px;
   -webkit-transition: all;
@@ -14956,6 +14956,10 @@ a.thumbnail.active {
 #messages-main .ms-menu .lv-item:not(.active):hover {
   background: #F2F2F2;
   cursor: pointer;
+}
+
+#messages-main .ms-body {
+  background-color: #F8F8F8;
 }
 
 @media (min-width: 768px) {
@@ -15028,7 +15032,7 @@ a.thumbnail.active {
  */
 
 .lv-message {
-  min-height: 450px;
+  min-height: 460px;
 }
 
 .lv-message .lv-item {

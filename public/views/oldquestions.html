@@ -1,14 +1,15 @@
 <div class="col-sm-6">
-    <div class="card">
-        <div class="card-header">
+    <div class="card" style="margin-top: 10px;">
+        <div class="card-header" style="margin-bottom:-25px; background-color: #F8F8F8;">
             <h2>Select from previous questions.</h2>
         </div>
 
         <div class="lv-body" style="padding-bottom:50px; max-height: 350px; overflow-y: scroll;">
             <div class="row media" ng-repeat="q in oldQuestions | orderBy: '-numWins'">
+                <hr>
                 <div class="checkbox pull-left" ng-click="o.addOldQuestion(q.question)">
                     <label>
-                        <i class="zmdi zmdi-plus" style="font-size: 18px;"></i>
+                        <i class="zmdi zmdi-plus" style="font-size: 24px;"></i>
                     </label>
                 </div>
                 <div class="media-body">
@@ -19,6 +20,9 @@
                         <li>Total: {{ q.numGames }}</li>
                     </ul>
                 </div>
+            </div>
+            <div class="row" style="margin-top:50px; margin-left: 20px;" ng-hide="oldQuestions.length">
+                <p>You will be able to reuse your questions in the next game!</p>
             </div>
         </div>
     </div>
