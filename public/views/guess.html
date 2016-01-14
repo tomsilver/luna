@@ -1,7 +1,8 @@
-<div class="card">
+<div class="card" ng-class="{'col-sm-6': o.guessCalculatorActive, 'col-sm-12': !o.guessCalculatorActive}">
     <div class="card-header">
         <h2>Guess Phase<small ng-show="responses.length">Your opponent has answered your questions! You are now in the Guess Phase of the Luna Game, which is the final phase. Below are your opponent’s answers.
 </small></h2>
+    <button data-ui-sref="home.game.guess.guessCalculator({ id: gameID })" class="btn btn-primary btn-xs bgm-bluegray" style="margin-top: 5px;" ng-show="!submitted && active">Guess Calculator</button>
     </div>
 
     <div class="card-body card-padding">
@@ -37,3 +38,4 @@
         </small>
     </div>
 </div>
+<data ui-view></data>

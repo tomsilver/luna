@@ -467,9 +467,13 @@ luna
         var opResponses = game.opResponses;
         var savedGuess = game.guess;
 
+        $scope.gameID = game._id;
         $scope.questions = [];
         $scope.responses = [];
         $scope.submitted = false;
+
+        $scope.o = {};
+        $scope.o.guessCalculatorActive = false;
 
         if ($scope.phase > 3) {
 
@@ -487,6 +491,23 @@ luna
                 // player has submitted a guess already
                 $scope.submitted = true;
             }
+
+            $scope.o.calculateGuess = function() {
+                var total = 0.0;
+                var changed = false;
+                for (var i=0; i<$scope.o.guessInputs.length; i++) {
+                    total += $scope.o.guessInputs[i];
+                    if ($scope.o.guessInputs[i] != 50)
+                        changed = true;
+                }
+                if (!changed)
+                    growlService.growl("First, slide the circles to estimate a guess.");
+                else {
+                    total /= $scope.o.guessInputs.length;
+                    $scope.o.estimate = total;
+                    $scope.guess = total;
+                }
+            }; 
 
             $scope.submitGuess = function() {
                 $scope.submitted = true;
@@ -554,3 +575,19 @@ luna
         questions.findOldQuestions();
 
     }])
+
+    // Guess Calculator
+    .controller('guessCalculatorCtrl', [
+        '$scope',
+        '$stateParams',
+        '$timeout',
+        'games',
+        'game',
+        function($scope, $stateParams, $timeout, games, game){
+
+        $scope.o.guessCalculatorActive = true;
+
+        $scope.o.guessInputs = [50, 50, 50, 50, 50];
+
+    }])
+

@@ -1,0 +1,28 @@
+<div class="col-sm-6">
+    <div class="card" style="margin-top: 10px;">
+        <div class="card-header" style="margin-bottom:-25px; background-color: #F8F8F8;">
+            <h2>Guess Calculator</h2><small>Slide the bars to indicate how intelligently each question was answered.</small>
+        </div>
+
+        <div class="lv-body" style="padding-bottom:10px; max-height: 450px; overflow-y: scroll;">
+            <div class="row media" ng-repeat="n in N">
+                <hr>
+                <div class="media-body"  style="margin-left: 30px; width: 85%;">
+                    <div class="lv-title">{{ n+1 }}: {{ responses[n] }}</div>
+                    <div class="lv-body">
+                        <div>
+                            <rzslider rz-slider-model="o.guessInputs[n]" rz-slider-options="{floor: 0, ceil: 100}">></rzslider>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="row media">
+                <div class="media-body"  style="margin-left: 30px; width: 85%;">
+                   <button ng-click="o.calculateGuess()" class="btn btn-primary btn-sm bgm-deeporange">Calculate</button>
+                   <div ng-show="o.estimate" style="display: inline-block; font-size: 16px; padding-left: 20px;">Estimate: {{ o.estimate }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

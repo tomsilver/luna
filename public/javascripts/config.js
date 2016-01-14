@@ -107,6 +107,18 @@ luna
                   }
             })
 
+            //Guess Calculator
+            .state('home.game.guess.guessCalculator', {
+                url: '/guessCalculator',
+                templateUrl: 'views/guessCalculator.html',
+                controller: 'guessCalculatorCtrl',
+                resolve: {
+                    game: ['$stateParams', 'games', function($stateParams, games) {
+                      return games.get($stateParams.id);
+                    }]
+                  }
+            })
+
             //Final
             .state('home.game.final', {
                 url: '/final',

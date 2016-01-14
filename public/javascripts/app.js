@@ -9,6 +9,6 @@ var luna = angular.module('luna', [
     'ui.bootstrap',
     'angular-loading-bar',
     'oc.lazyLoad',
-    'nouislider',
-    'angular-md5'
+    'angular-md5',
+    'rzModule'
  ])
