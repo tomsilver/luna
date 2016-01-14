@@ -79,7 +79,7 @@ router.post('/login', function(req, res, next){
 /* get player from mongodb according to username */
 var playerFromRequest = function(req, callback) {
 	Player.find({ username: req.payload.username }, function(err, player) {
-	    if (err) { return next(err); }
+	    if (err) { return err; }
 	    if (!player) { return next(new Error('can\'t find player')); }
 	    if (player.length > 1) { return next(new Error('found more than one player')) };
 		callback(player[0]);
