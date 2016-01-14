@@ -5,7 +5,9 @@ require('./models/Questions');
 require('./models/Responses');
 require('./models/Games');
 
-mongoose.connect('mongodb://localhost/luna');
+var mongoStr = 'mongodb://tom:'+process.env.SECRET+'@ec2-52-23-169-221.compute-1.amazonaws.com:3000/luna';
+
+mongoose.connect(mongoStr);
 
 var express = require('express');
 var path = require('path');
