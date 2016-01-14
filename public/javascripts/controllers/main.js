@@ -395,16 +395,18 @@ luna
         };
 
         $scope.submitQuestions = function() {
-            $scope.submitted = true;
-            $scope.o.oldQuestionsActive = false;
-            var questionReq = {
-                questions: $scope.questions
-            };
-            games.addQuestions($stateParams.id, questionReq, function(data) {
-                $scope.goToPhase(data.phase, function() {
-                    growlService.growl('Submitted questions!', 'inverse');
+            if (!$scope.submitted) {
+                $scope.submitted = true;
+                $scope.o.oldQuestionsActive = false;
+                var questionReq = {
+                    questions: $scope.questions
+                };
+                games.addQuestions($stateParams.id, questionReq, function(data) {
+                    $scope.goToPhase(data.phase, function() {
+                        growlService.growl('Submitted questions!', 'inverse');
+                    });
                 });
-            });
+            }
         };
 
     }])
@@ -439,15 +441,17 @@ luna
             }
 
             $scope.submitResponses = function() {
-                $scope.submitted = true;
-                var responseReq = {
-                    responses: $scope.responses
-                };
-                games.addResponses($stateParams.id, responseReq, function(data) {
-                    $scope.goToPhase(data.phase, function() {
-                        growlService.growl('Submitted responses!', 'inverse');
+                if (!$scope.submitted) {
+                    $scope.submitted = true;
+                    var responseReq = {
+                        responses: $scope.responses
+                    };
+                    games.addResponses($stateParams.id, responseReq, function(data) {
+                        $scope.goToPhase(data.phase, function() {
+                            growlService.growl('Submitted responses!', 'inverse');
+                        });
                     });
-                });
+                }
             };
 
         }
@@ -518,17 +522,19 @@ luna
             }; 
 
             $scope.submitGuess = function() {
-                $scope.submitted = true;
-                var guessReq = {
-                    guess: $scope.guess
-                };
-                games.addGuess($stateParams.id, guessReq, function(data) {
-                    $scope.goToPhase(data.phase, function() {
-                        growlService.growl('Submitted guess!', 'inverse');
+                if (!$scope.submitted) {
+                    $scope.submitted = true;
+                    var guessReq = {
+                        guess: $scope.guess
+                    };
+                    games.addGuess($stateParams.id, guessReq, function(data) {
+                        $scope.goToPhase(data.phase, function() {
+                            growlService.growl('Submitted guess!', 'inverse');
+                        });
                     });
-                });
-                if ($scope.responseGrades.length) {
-                    games.saveResponseGrades($scope.responseGrades);
+                    if ($scope.responseGrades.length) {
+                        games.saveResponseGrades($scope.responseGrades);
+                    }
                 }
             };
 
