@@ -126,6 +126,24 @@ luna
           $scope.isLoggedIn = auth.isLoggedIn;
           $scope.currentUser = auth.currentUser;
           $scope.logOut = auth.logOut;
+          $scope.isGuest = auth.isGuest;
+
+    }])
+
+    // =========================================================================
+    // Landing
+    // =========================================================================
+    .controller('landingCtrl', [
+        '$scope',
+        '$state',
+        'auth',
+        function($scope, $state, auth){
+
+        $scope.registerGuest = function() {
+            auth.registerGuest(function(){
+                $state.go('home.new');
+            });    
+        };
 
     }])
 
@@ -165,6 +183,19 @@ luna
                 });
             });
           };
+
+          $scope.isGuest = auth.isGuest;
+
+          $scope.saveGuest = function(){
+            $scope.hashUser($scope.user, function(user) {
+                auth.saveGuest(user).error(function(error){
+                  $scope.error = error;
+                }).then(function(){
+                  $state.go('home.new');
+                });
+            });
+          };
+
         }])
 
 

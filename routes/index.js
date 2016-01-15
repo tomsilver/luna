@@ -40,41 +40,12 @@ var getRandomColor = function() {
 	return colors[Math.floor(Math.random()*colors.length)];
 };
 
-/* register a new player */
-router.post('/register', function(req, res, next){
-  if(!req.body.username || !req.body.password){
-    return res.status(400).json({message: 'Please fill out all fields'});
-  }
-
-  var player = new Player();
-  player.username = req.body.username;
-  player.setPassword(req.body.password);
-  player.initial = getRandomInitial();
-  player.color = getRandomColor();
-
-  player.save(function (err){
-    if(err){ return next(err); }
-
-    return res.json({token: player.generateJWT()})
-  });
-});
-
-/* login existing player */
-router.post('/login', function(req, res, next){
-  if(!req.body.username || !req.body.password){
-    return res.status(400).json({message: 'Please fill out all fields'});
-  }
-
-  passport.authenticate('local', function(err, player, info){
-    if(err){ return next(err); }
-
-    if(player){
-      return res.json({token: player.generateJWT()});
-    } else {
-      return res.status(401).json(info);
-    }
-  })(req, res, next);
-});
+var getRandomAlphanumericString = function(length) {
+	var chars = '0123456789abcdefghijklmnopqrstuvwxyz';
+    var result = '';
+    for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+    return result;
+};
 
 /* get player from mongodb according to username */
 var playerFromRequest = function(req, callback) {
@@ -228,7 +199,6 @@ var getAllGames = function(player, callback) {
 	});
 };
 
-
 var getCurrentOpponents = function(player, callback) {
 	var ops = [];
 	getAllGames(player, function(games) {
@@ -247,6 +217,96 @@ var getCurrentOpponents = function(player, callback) {
 		callback(ops);
 	});
 };
+
+/* register a new player */
+router.post('/register', function(req, res, next){
+  if(!req.body.username || !req.body.password){
+    return res.status(400).json({message: 'Please fill out all fields'});
+  }
+
+  var player = new Player();
+  player.username = req.body.username;
+  player.setPassword(req.body.password);
+  player.initial = getRandomInitial();
+  player.color = getRandomColor();
+
+  player.save(function (err){
+    if(err){ return next(err); }
+
+    return res.json({token: player.generateJWT()})
+  });
+});
+
+/* register a guest */
+router.get('/registerGuest', function(req, res, next){
+
+  var usercandidate = getRandomAlphanumericString(32);
+  var password = getRandomAlphanumericString(32);
+
+  var checkUniqueUsername = function(callback) {
+  	Player.findOne({username: usercandidate})
+  	  .exec(function(user) {
+  	  	if (user != null) {
+  	  		usercandidate = getRandomAlphanumericString(32);
+  	  		checkUniqueUsername();
+  	  	}
+  	  	else {
+  	  		callback();
+  	  	}
+  	  });
+  };
+
+  checkUniqueUsername(function() {
+  	var player = new Player();
+	player.username = usercandidate;
+	player.setPassword(password);
+	player.initial = getRandomInitial();
+	player.color = getRandomColor();
+	player.isGuest = true;
+
+	player.save(function (err){
+	  if(err){ return next(err); }
+
+	  return res.json({token: player.generateJWT()})
+	});
+  });
+});
+
+/* save a guest */
+router.post('/saveGuest', auth, function(req, res, next){
+  if(!req.body.username || !req.body.password){
+    return res.status(400).json({message: 'Please fill out all fields'});
+  }
+
+  playerFromRequest(req, function(player) {
+
+	  player.username = req.body.username;
+	  player.setPassword(req.body.password);
+
+	  player.save(function (err){
+	    if(err){ return next(err); }
+
+	    return res.json({token: player.generateJWT()})
+	  });
+  });
+});
+
+/* login existing player */
+router.post('/login', function(req, res, next){
+  if(!req.body.username || !req.body.password){
+    return res.status(400).json({message: 'Please fill out all fields'});
+  }
+
+  passport.authenticate('local', function(err, player, info){
+    if(err){ return next(err); }
+
+    if(player){
+      return res.json({token: player.generateJWT()});
+    } else {
+      return res.status(401).json(info);
+    }
+  })(req, res, next);
+});
 
 
 /* game routes */

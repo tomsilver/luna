@@ -3,7 +3,6 @@ var crypto = require('crypto');
 var jwt = require('jsonwebtoken');
 
 var secret = process.env.SECRET;
-console.log("secret is "+secret);
 
 var PlayerSchema = new mongoose.Schema({
   username: {type: String, lowercase: true, unique: true},
@@ -16,10 +15,11 @@ var PlayerSchema = new mongoose.Schema({
   winningStreak: { type: Number, default: 0 },
   winningStreakRecord: { type: Number, default: 0 },
   numGames: { type: Number, default: 0 },
-  isMachine: { type: Boolean, default: 0 },
+  isMachine: { type: Boolean, default: false },
   initial: String,
   color: Number,
-  updated: { type: Date, default: Date.now }
+  updated: { type: Date, default: Date.now },
+  isGuest: { type: Boolean, default: false }
 });
 
 PlayerSchema.methods.setPassword = function(password){

@@ -273,8 +273,11 @@ luna
     .factory('auth', ['$http', '$window', '$state', function($http, $window, $state){
       var auth = {};
 
-      auth.saveToken = function (token){
+      auth.saveToken = function (token, isGuest, callback){
+        console.log(isGuest);
         $window.localStorage['luna-token'] = token;
+        $window.localStorage['luna-is-guest'] = isGuest;
+        callback();
       };
 
       auth.getToken = function (){
@@ -300,24 +303,47 @@ luna
 
           return payload.username;
         }
+        return false;
+      };
+
+      auth.isGuest = function() {
+        var g = true;
+        g = g && $window.localStorage['luna-is-guest'];
+        g = g && ($window.localStorage['luna-is-guest'] !== 'false');
+        console.log(g);
+        return g;
       };
 
       auth.register = function(user){
         return $http.post('/register', user).success(function(data){
-          auth.saveToken(data.token);
+          auth.saveToken(data.token, false, function(){});
+        });
+      };
+
+      auth.registerGuest = function(callback){
+        return $http.get('/registerGuest').success(function(data){
+          auth.saveToken(data.token, true, callback);
+        });
+      };
+
+      auth.saveGuest = function(user){
+        return $http.post('/saveGuest', user, {
+          headers: {Authorization: 'Bearer '+auth.getToken()}
+        }).success(function(data){
+          auth.saveToken(data.token, false, function(){});
         });
       };
 
       auth.logIn = function(user){
         return $http.post('/login', user).success(function(data){
-          auth.saveToken(data.token);
+          auth.saveToken(data.token, false, function(){});
         });
       };
 
       auth.logOut = function(){
         $window.localStorage.removeItem('luna-token');
-        console.log("logged out");
-        $state.go('login')
+        $window.localStorage.removeItem('luna-is-guest');
+        $state.go('login');
       };
 
       return auth;

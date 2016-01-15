@@ -4,10 +4,10 @@
     <span>{{ error.message }}</span>
   </div>
 
-  <form ng-submit="register()"
+  <form ng-submit="saveGuest()"
     style="margin-top:30px;">
-    <h3>Sign Up | <a data-ui-sref="login">Log In</a></h3>
-    <p ng-show="isGuest()">Your progress will be saved.</p>
+    <h3>Sign Up</h3>
+    <p>Your progress will be saved.</p>
 
     <div class="form-group">
       <input type="email"

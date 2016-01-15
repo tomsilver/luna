@@ -50,7 +50,13 @@ luna
             //Landing
             .state('landing', {
                 url: '/landing',
-                templateUrl: 'views/landing.html'
+                templateUrl: 'views/landing.html',
+                controller: 'landingCtrl',
+                onEnter: ['$state', 'auth', function($state, auth){
+                  if(auth.isLoggedIn()){
+                    $state.go('home.new');
+                  }
+                }]
             })
 
             //Game
@@ -176,6 +182,18 @@ luna
               onEnter: ['$state', 'auth', function($state, auth){
                 if(auth.isLoggedIn()){
                   $state.go('home.new');
+                }
+              }]
+            })
+
+            //Register Guest
+            .state('registerGuest', {
+              url: '/registerGuest',
+              templateUrl: 'views/registerGuest.html',
+              controller: 'AuthCtrl',
+              onEnter: ['$state', 'auth', function($state, auth){
+                if(!auth.isGuest()){
+                  $state.go('register');
                 }
               }]
             })

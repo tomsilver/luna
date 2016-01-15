@@ -1,7 +1,7 @@
 <ul class="header-inner clearfix">
 
     <li class="logo hidden-xs">
-        <a data-ui-sref="home.new" data-ng-click="lunaCtrl.sidebarStat($event)">Luna
+        <a data-ui-sref="landing">Luna
         </a>
     </li>
 
@@ -55,4 +55,8 @@
             </li>
         </ul>
     </li>
+</ul>
+
+<ul ng-show="isGuest() && isLoggedIn()" class="header-inner clearfix bgm-white" style="margin: -12px; padding: 2px; text-align: center;">
+    You are playing as a guest. <a data-ui-sref="registerGuest">Sign Up</a> to save your progress. <a href="" ng-click="logOut()">Sign Out</a> to erase your progress.
 </ul>
