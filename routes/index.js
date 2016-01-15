@@ -332,8 +332,7 @@ router.post('/home', auth, function(req, res, next) {
 
 			var query = { $and: excludes };
 			var update = {
-		     	$set: { phase: 1, 
-		     		    player2: player,
+		     	$set: { player2: player,
 		     		    initial1: myInitial,
 		     		    color1: myColor 
 		     		  }

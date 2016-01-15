@@ -57,6 +57,6 @@
     </li>
 </ul>
 
-<ul ng-show="isGuest() && isLoggedIn()" class="header-inner clearfix bgm-white" style="margin: -12px; padding: 2px; text-align: center;">
+<ul ng-show="(isGuest()) && isLoggedIn()" class="header-inner clearfix bgm-white" style="margin: -12px; padding: 2px; text-align: center;">
     You are playing as a guest. <a data-ui-sref="registerGuest">Sign Up</a> to save your progress. <a href="" ng-click="logOut()">Sign Out</a> to erase your progress.
 </ul>

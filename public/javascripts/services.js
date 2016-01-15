@@ -274,7 +274,6 @@ luna
       var auth = {};
 
       auth.saveToken = function (token, isGuest, callback){
-        console.log(isGuest);
         $window.localStorage['luna-token'] = token;
         $window.localStorage['luna-is-guest'] = isGuest;
         callback();
@@ -310,7 +309,6 @@ luna
         var g = true;
         g = g && $window.localStorage['luna-is-guest'];
         g = g && ($window.localStorage['luna-is-guest'] !== 'false');
-        console.log(g);
         return g;
       };
 

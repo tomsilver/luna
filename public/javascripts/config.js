@@ -51,12 +51,7 @@ luna
             .state('landing', {
                 url: '/landing',
                 templateUrl: 'views/landing.html',
-                controller: 'landingCtrl',
-                onEnter: ['$state', 'auth', function($state, auth){
-                  if(auth.isLoggedIn()){
-                    $state.go('home.new');
-                  }
-                }]
+                controller: 'landingCtrl'
             })
 
             //Game

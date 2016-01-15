@@ -11,7 +11,7 @@
         <form role="form" ng-show="questions.length" ng-submit="submitResponses()">
             <div class="form-group fg-line" ng-repeat="n in N">
                 <label for="responses{{ n }}" class="control-label">{{ questions[n] }}</label>
-                <input type="text" class="form-control input-sm" ng-model="responses[n]" placeholder="Response {{ n+1 }}" ng-readonly="submitted || !active" ng-minlength="1" required>
+                <input type="text" class="form-control" ng-model="responses[n]" placeholder="Response {{ n+1 }}" ng-readonly="submitted || !active" ng-minlength="1" required>
             </div>
             <div ng-show="!submitted && active">
                 <div class="form-group">
