@@ -77,7 +77,8 @@ luna
                 templateUrl: 'views/oldquestions.html',
                 controller: 'oldquestionsCtrl',
                 resolve: {
-                    game: ['$stateParams', 'games', function($stateParams, games) {
+                    game: ['$stateParams', 'questions', 'games', function($stateParams, questions, games) {
+                      questions.findOldQuestions();
                       return games.get($stateParams.id);
                     }]
                   }
