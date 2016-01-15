@@ -2,7 +2,7 @@ angular.module('luna').run(['$templateCache', function($templateCache) {
   'use strict';
 
   $templateCache.put('public/template/footer.html',
-    "Copyright &copy; 2016 Tom Silver<ul class=\"f-menu\"><li><a data-ui-sref=\"profile\">Account</a></li><li><a data-ui-sref=\"home.contact\">Contact</a></li><li><a data-ui-sref=\"home.help\">Help</a></li><li><a data-ui-sref=\"home.testForAI\">About</a></li></ul>"
+    "Copyright &copy; 2016 Tom Silver<ul class=\"f-menu\"><li><a data-ui-sref=\"contact\">Contact</a></li></ul>"
   );
 
 

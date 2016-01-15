@@ -1,6 +1,6 @@
 luna
     .config(function ($stateProvider, $urlRouterProvider, $locationProvider){
-        $urlRouterProvider.otherwise("/home");
+        $urlRouterProvider.otherwise("/landing");
 
         $stateProvider
             
@@ -42,9 +42,15 @@ luna
             })
 
             //Contact
-            .state('home.contact', {
+            .state('contact', {
                 url: '/contact',
                 templateUrl: 'views/contact.html'
+            })
+
+            //Landing
+            .state('landing', {
+                url: '/landing',
+                templateUrl: 'views/landing.html'
             })
 
             //Game
