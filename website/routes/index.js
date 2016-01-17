@@ -190,13 +190,17 @@ var getAllGames = function(player, callback) {
 	Game.find({ $or:
 		[ {'player1':player._id}, 
 		  {'player2':player._id} ]
-		},
-		function (err, games){
+		})
+	  .populate('questions1.question')
+	  .populate('questions2.question')
+	  .populate('responses1.response')
+	  .populate('responses2.response')
+	  .exec(function (err, games){
 	    if (err) { 
 	    	return next(err); 
 	    }
 	    callback(games);
-	});
+	  });
 };
 
 var getCurrentOpponents = function(player, callback) {

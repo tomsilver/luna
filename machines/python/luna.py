@@ -4,7 +4,7 @@ import requests
 
 
 # Constants
-BASE_URL = 'http://localhost:3000/'
+BASE_URL = 'http://localhost:3000/' #'http://ec2-52-23-169-221.compute-1.amazonaws.com:3000/'
 VERBOSITY = 1
 
 # Utilities
@@ -13,12 +13,13 @@ def printv(s, v=VERBOSITY):
 		print s
 
 def formatRequest(endpoint, token, data=None, baseUrl=BASE_URL):
-	url = 'http://localhost:3000/'+endpoint
+	url = BASE_URL+endpoint
 	headers = {'Authorization': 'Bearer '+token}
 	rargs = {'url': url, 'headers': headers }
 	if data is not None:
 		rargs['data'] = data
 	return rargs
+
 
 # Single Luna Game
 class LunaGame(object):
@@ -65,15 +66,19 @@ class LunaGame(object):
 		if len(self.opQuestions) > 0:
 			print "Warning: Rejected attempt to update opponent questions after they were set."
 			return
-		
-		self.opQuestions = opQuestions
+
+		opQuestions = sorted(opQuestions, key=lambda q: int(q['questionNum']))
+		print opQuestions
+		self.opQuestions = [str(q['question']['question']) for q in opQuestions]
+		print self.opQuestions
 
 	def _updateOpResponses(self, opResponses):
 		if len(self.opResponses) > 0:
 			print "Warning: Rejected attempt to update opponent responses after they were set."
 			return
 		
-		self.opResponses = opResponses
+		opResponses = sorted(opResponses, key=lambda r: int(r['questionNum']))
+		self.opResponses = [str(r['response']['response']) for r in opResponses]
 
 	def _updateOpGuess(self, opGuess):
 		if self.opGuess > 0:
@@ -92,12 +97,9 @@ class LunaGame(object):
 	def updateGame(self, gameJson, token):
 		newPhase = gameJson['phase']
 
-		if newPhase == self.phase:
+		if gameJson['active'] and (newPhase == self.phase):
 			printv ("No updates to game "+self.gameId)
 			return
-
-		if (newPhase < self.phase) or (newPhase - self.phase > 2):
-			raise Exception("Game "+self.gameId+" is out of sync with server.")
 
 		# update data
 		self._updateOpQuestions(gameJson['opQuestions'])
@@ -141,11 +143,21 @@ class LunaPlayer(object):
 		self.guessFn = guessFn
 		self.games = {} # gameIds to LunaGames
 
+
+	def _lunaGameFromResponse(self, resp, interviewQuestions=None):
+		if interviewQuestions is None:
+			interviewQuestions = resp['questions']
+		elif len(interviewQuestions) != 5:
+			raise Exception("You must provide 5 interview questions.")
+		return LunaGame(resp['_id'], resp['phase'], resp['turn'], interviewQuestions, self.responseFn, self.guessFn)
+
 	def createGame(self, interviewQuestions):
+		if len(interviewQuestions) != 5:
+			raise Exception("You must provide 5 interview questions.")
 		endpoint = 'home'
 		rargs = formatRequest(endpoint, self.token, {})
 		newGame = json.loads(requests.post(**rargs).content)
-		newLunaGame =  LunaGame(newGame['_id'], newGame['phase'], newGame['turn'], interviewQuestions, self.responseFn, self.guessFn)
+		newLunaGame =  self._lunaGameFromResponse(newGame, interviewQuestions)
 		self.games[newGame['_id']] = newLunaGame
 
 	def _updateAllGames(self):
@@ -157,13 +169,15 @@ class LunaPlayer(object):
 				savedGame = self.games[game['_id']]
 				savedGame.updateGame(game, self.token)
 			except KeyError:
-				raise Exception("Game "+game['_id']+" from server is unrecognized by player.")
+				printv("Loading game "+game['_id'])
+				lgame = self._lunaGameFromResponse(game)
+				self.games[game['_id']] = lgame
 
 	def _updateStats(self):
-		TODO
+		pass
 
 	def report(self):
-		TODO
+		pass
 
 	def update(self):
 		self._updateAllGames()
