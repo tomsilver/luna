@@ -324,6 +324,12 @@ luna
         });
       };
 
+      auth.registerMachine = function(user, callback){
+        return $http.post('/registerMachine', user).success(function(data){
+          callback(data.token);
+        });
+      };
+
       auth.saveGuest = function(user){
         return $http.post('/saveGuest', user, {
           headers: {Authorization: 'Bearer '+auth.getToken()}

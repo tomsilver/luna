@@ -196,6 +196,12 @@ luna
             });
           };
 
+          $scope.registerMachine = function() {
+            auth.registerMachine($scope.user, function(token){
+                console.log(token);
+            });    
+          };
+
         }])
 
 

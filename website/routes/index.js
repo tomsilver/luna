@@ -272,6 +272,24 @@ router.get('/registerGuest', function(req, res, next){
   });
 });
 
+/* register a guest */
+router.post('/registerMachine', function(req, res, next){
+
+  var password = getRandomAlphanumericString(32);
+
+  var player = new Player();
+  player.username = req.body.username;
+  player.setPassword(password);
+  player.initial = getRandomInitial();
+  player.color = getRandomColor();
+  player.isMachine = true;
+
+  player.save(function (err){
+	if(err){ return next(err); }
+	return res.json({token: player.generateJWT()})
+  });
+});
+
 /* save a guest */
 router.post('/saveGuest', auth, function(req, res, next){
   if(!req.body.username || !req.body.password){

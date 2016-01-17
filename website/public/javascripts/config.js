@@ -193,6 +193,13 @@ luna
               }]
             })
 
+            //Register Machine
+            .state('registerMachine', {
+              url: '/registerMachine',
+              templateUrl: 'views/registerMachine.html',
+              controller: 'AuthCtrl'
+            })
+
             //404
             .state('404', {
               url: '/404',
