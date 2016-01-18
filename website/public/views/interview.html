@@ -2,7 +2,7 @@
     <div class="card-header">
         <h2>Interview Phase<small>Please enter {{ N.length }} questions for the other player.
 		</small></h2>
-		<button data-ui-sref="home.game.interview.oldquestions({ id: gameID })" class="btn btn-primary btn-xs bgm-bluegray" style="margin-top: 5px;" ng-show="!submitted && active">Select from previous questions</button>
+		<button ng-hide="isNew" data-ui-sref="home.game.interview.oldquestions({ id: gameID })" class="btn btn-primary btn-xs bgm-bluegray" style="margin-top: 5px;" ng-show="!submitted && active">Select from previous questions</button>
     </div>
 
     <div class="card-body card-padding">

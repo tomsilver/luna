@@ -141,6 +141,7 @@ var individualizeGame = function(player, game, callback) {
 	var opSmartsRating = null;
 	var oldSmartsRating = 'Not set';
 	var notif = game['notif'+String(pNum)];
+	var opMachine = null;
 
 
 	if (phase > 1) {
@@ -152,6 +153,7 @@ var individualizeGame = function(player, game, callback) {
 				smartsRating = game['newSmartsRating'+String(pNum)];
 				opSmartsRating = game['smartsRating'+String(oNum)];
 				oldSmartsRating = game['smartsRating'+String(pNum)];
+				opMachine = game['isMachine'+String(oNum)];
 				if (game.outcome == pNum)
 					outcome = 1;
 				else if (game.outcome == oNum)
@@ -180,7 +182,8 @@ var individualizeGame = function(player, game, callback) {
 		smartsRating: smartsRating,
 		opSmartsRating: opSmartsRating,
 		oldSmartsRating: oldSmartsRating,
-		notif: notif
+		notif: notif,
+		opMachine: opMachine
 	};
 
 	callback(o);
@@ -219,6 +222,18 @@ var getCurrentOpponents = function(player, callback) {
 			}
 		}
 		callback(ops);
+	});
+};
+
+var activeGameCount = function(player, callback) {
+	getAllGames(player, function(games) {
+		var activeCount = 0;
+		for (var i=0; i<games.length; i++)
+		{
+			if (games[i].active)
+				activeCount++;
+		}
+		callback(activeCount);
 	});
 };
 
@@ -337,55 +352,67 @@ router.post('/home', auth, function(req, res, next) {
 	/* random opponent identifiers */
 	var myInitial = getRandomInitial();
 	var myColor = getRandomColor();
+
 	/* look up player */
 	playerFromRequest(req, function (player){
 	    req.player = player;
+	    var myMachine = player.isMachine;
 
-		/* first check if there are any open games */
-		var excludes = [{"player2": null}, {"player1": { $ne: player }}];
-		
-		/* exclude active opponents */
-		getCurrentOpponents(player, function(opponents){
-			var exclude;
-			for (var i=0; i<opponents.length; i++) {
-				exclude = {"player1": { $ne: opponents[i]}};
-				excludes.push(exclude);
-			}
+	    /* if >= 5 games, don't create a new one */
+	    activeGameCount(player, function(count) {
+	    	if (count >= 5)
+	    		res.json(false);
+	    	else {
 
-			var query = { $and: excludes };
-			var update = {
-		     	$set: { player2: player,
-		     		    initial1: myInitial,
-		     		    color1: myColor 
-		     		  }
-			};
-			var options = { new: true };
-			Game.findOneAndUpdate(query, update, options, function(err, game) {
-			  if (err) {
-			    console.log('got an error');
-			    console.log(err);
-			  }
-			  /* no open games, so create a new one */
-			  if (game === null && typeof game === "object") {
-			  	game = new Game({
-			  					 player1: player, 
-			  					 player2: null,
-			  					 initial2: myInitial,
-			  					 color2: myColor
-			  					});
-			  	game.save(function(err, game){
-				    if(err){ return next(err); }
-				    	individualizeGame(player, game, function(indvGame) {
-				    		res.json(indvGame);
-				    	});    
-				  });
-			  }
-			  else {
-			  	individualizeGame(player, game, function(indvGame) {
-				   	res.json(indvGame);
+				/* first check if there are any open games */
+				var excludes = [{"player2": null}, {"player1": { $ne: player }}];
+				
+				/* exclude active opponents */
+				getCurrentOpponents(player, function(opponents){
+					var exclude;
+					for (var i=0; i<opponents.length; i++) {
+						exclude = {"player1": { $ne: opponents[i]}};
+						excludes.push(exclude);
+					}
+
+					var query = { $and: excludes };
+					var update = {
+				     	$set: { player2: player,
+				     		    initial1: myInitial,
+				     		    color1: myColor ,
+				     		    isMachine2: myMachine
+				     		  }
+					};
+					var options = { new: true };
+					Game.findOneAndUpdate(query, update, options, function(err, game) {
+					  if (err) {
+					    console.log('got an error');
+					    console.log(err);
+					  }
+					  /* no open games, so create a new one */
+					  if (game === null && typeof game === "object") {
+					  	game = new Game({
+					  					 player1: player, 
+					  					 player2: null,
+					  					 initial2: myInitial,
+					  					 color2: myColor,
+					  					 isMachine1: myMachine
+					  					});
+					  	game.save(function(err, game){
+						    if(err){ return next(err); }
+						    	individualizeGame(player, game, function(indvGame) {
+						    		res.json(indvGame);
+						    	});    
+						  });
+					  }
+					  else {
+					  	individualizeGame(player, game, function(indvGame) {
+						   	res.json(indvGame);
+						});
+					  }
+				    });
 				});
-			  }
-		    });
+			}
 		});
 	});
 });
@@ -629,8 +656,11 @@ router.post('/home/:game/guess', auth, function(req, res, next) {
   		.populate('questions1.question')
   		.populate('questions2.question')
   		.exec(function(err, game) {
-  		game.player1.guessHistory.push(game.guess2);
-  		game.player2.guessHistory.push(game.guess1);
+
+  		if (!game.isMachine2)
+  			game.player1.guessHistory.push(game.guess2);
+  		if (!game.isMachine1)
+  			game.player2.guessHistory.push(game.guess1);
 
   		var firstTime1 = (game.player1.guessHistory.length <= 1);
   		var firstTime2 = (game.player2.guessHistory.length <= 1);
@@ -642,12 +672,12 @@ router.post('/home/:game/guess', auth, function(req, res, next) {
 
   		if (!firstTime1)
   			game.player1.smartsRating = mean(game.player1.guessHistory);
-  		else
+  		else if (!game.isMachine2)
   			game.player1.smartsRating = game.guess2;
 
   		if (!firstTime2)
   			game.player2.smartsRating = mean(game.player2.guessHistory);
-  		else
+  		else if (!game.isMachine1)
   			game.player2.smartsRating = game.guess1;
 
   		game.newSmartsRating1 = game.player1.smartsRating;

@@ -22,7 +22,9 @@ var GameSchema = new mongoose.Schema({
   newSmartsRating1: Number,
   newSmartsRating2: Number,
   notif1: { type: Boolean, default: false },
-  notif2: { type: Boolean, default: false }
+  notif2: { type: Boolean, default: false },
+  isMachine1: { type: Boolean, default: false },
+  isMachine2: { type: Boolean, default: false }
 });
 
 mongoose.model('Game', GameSchema);

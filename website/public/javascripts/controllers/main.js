@@ -9,7 +9,8 @@ luna
         '$scope',
         '$location',
         'games',
-        function($timeout, $state, $scope, $location, games){
+        'growlService',
+        function($timeout, $state, $scope, $location, games, growlService){
         
         // Detect Mobile Browser
         if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
@@ -61,6 +62,7 @@ luna
 
         $scope.getCurrentGames = function(callback) {
             games.getCurrentGames(function() {
+                $scope.games = [];
                 $scope.games = games.currentGames;
                 $scope.notifiedGames = games.notifiedGames;
                 if (!$scope.silenceNotifs)
@@ -82,8 +84,13 @@ luna
 
         $scope.newGame = function() {
             games.create(function(newGame) {
-                $location.path('/home/'+newGame._id);
-                $scope.getCurrentGames(function() {});
+                if (newGame == false) {
+                    growlService.growl('You may only have 5 active games.')
+                }
+                else {
+                    $location.path('/home/'+newGame._id);
+                    $scope.getCurrentGames(function() {});
+                }
             });
         };
 
@@ -359,8 +366,28 @@ luna
         }
 
         $scope.gameUpdate = $interval(function() {
+            var oldPhase = $scope.phase;
             if ($scope.active) {
-                $scope.getCurrentGames(function() {});
+                $scope.getCurrentGames(function() {
+                    var thisGame;
+                    for (var i=0; i<$scope.games.length; i++) {
+                        thisGame = $scope.games[i];
+                        if ($stateParams.id == thisGame._id)
+                            break;
+                        thisGame = false;
+                    }
+                    if (thisGame) {
+                        var newPhase = thisGame.phase;
+                        if (newPhase != oldPhase)
+                            $scope.goToPhase(newPhase);
+                    }
+                    // game is finished
+                    else {
+                        $scope.getPastGames(function() {
+                            $scope.goToPhase(7);
+                        });
+                    }
+                });
             }
         }, 10000);
 
@@ -377,9 +404,18 @@ luna
         '$scope',
         '$stateParams',
         'growlService', 
+        'auth',
         'games',
         'game', 
-        function($scope, $stateParams, growlService, games, game){
+        function($scope, $stateParams, growlService, auth, games, game){
+
+        $scope.isNew = false;
+
+        if (auth.isNew()) {
+            growlService.growl('Your Luna Game has begun!');
+            growlService.growl('Enter your interview questions.');
+            $scope.isNew = true;
+        }
 
         $scope.gameID = game._id;
         $scope.questions = [];
@@ -583,9 +619,12 @@ luna
     .controller('finalCtrl', [
         '$scope',
         '$stateParams',
+        'auth',
         'games',
         'game', 
-        function($scope, $stateParams, games, game){
+        function($scope, $stateParams, auth, games, game){
+
+        $scope.isNew = auth.isNew();
 
         if ($scope.phase >= 6) {
             $scope.myGuess = game.guess;
@@ -594,9 +633,14 @@ luna
             $scope.smartsRating = game.smartsRating;
             $scope.opSmartsRating = game.opSmartsRating;
             $scope.oldSmartsRating = game.oldSmartsRating;
+            $scope.opMachine = game.opMachine;
+
+            console.log($scope.opMachine);
 
             if (games.current)
                 games.deactivate($stateParams.id, function() {});
+
+            auth.notNew();
 
         }
 

@@ -173,7 +173,6 @@ luna
         return $http.post('/home', {}, {
           headers: {Authorization: 'Bearer '+auth.getToken()}
         }).success(function(data){
-          o.currentGames.push(data);
           callback(data);
         });
       };
@@ -273,9 +272,10 @@ luna
     .factory('auth', ['$http', '$window', '$state', function($http, $window, $state){
       var auth = {};
 
-      auth.saveToken = function (token, isGuest, callback){
+      auth.saveToken = function (token, isGuest, isNew, callback){
         $window.localStorage['luna-token'] = token;
         $window.localStorage['luna-is-guest'] = isGuest;
+        $window.localStorage['luna-is-new'] = isNew;
         callback();
       };
 
@@ -312,15 +312,27 @@ luna
         return g;
       };
 
+      auth.isNew = function() {
+        var g = true;
+        g = g && $window.localStorage['luna-is-new'];
+        g = g && ($window.localStorage['luna-is-new'] !== 'false');
+        return g;
+      };
+
+      auth.notNew = function() {
+        $window.localStorage.removeItem('luna-is-new');
+        $window.localStorage['luna-is-new'] = false;
+      };
+
       auth.register = function(user){
         return $http.post('/register', user).success(function(data){
-          auth.saveToken(data.token, false, function(){});
+          auth.saveToken(data.token, false, true, function(){});
         });
       };
 
       auth.registerGuest = function(callback){
         return $http.get('/registerGuest').success(function(data){
-          auth.saveToken(data.token, true, callback);
+          auth.saveToken(data.token, true, true, callback);
         });
       };
 
@@ -334,13 +346,13 @@ luna
         return $http.post('/saveGuest', user, {
           headers: {Authorization: 'Bearer '+auth.getToken()}
         }).success(function(data){
-          auth.saveToken(data.token, false, function(){});
+          auth.saveToken(data.token, false, false, function(){});
         });
       };
 
       auth.logIn = function(user){
         return $http.post('/login', user).success(function(data){
-          auth.saveToken(data.token, false, function(){});
+          auth.saveToken(data.token, false, false, function(){});
         });
       };
 

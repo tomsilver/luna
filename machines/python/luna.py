@@ -145,7 +145,7 @@ class LunaPlayer(object):
 	def _lunaGameFromResponse(self, resp, interviewQuestions=None):
 		if interviewQuestions is None:
 			interviewQuestions = resp['questions']
-		elif len(interviewQuestions) != 5:
+		if len(interviewQuestions) != 5:
 			raise Exception("You must provide 5 interview questions.")
 		return LunaGame(resp['_id'], resp['phase'], resp['turn'], interviewQuestions, self.responseFn, self.guessFn)
 
