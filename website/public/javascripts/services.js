@@ -272,10 +272,13 @@ luna
     .factory('auth', ['$http', '$window', '$state', function($http, $window, $state){
       var auth = {};
 
+      var VERSION = 1;
+
       auth.saveToken = function (token, isGuest, isNew, callback){
         $window.localStorage['luna-token'] = token;
         $window.localStorage['luna-is-guest'] = isGuest;
         $window.localStorage['luna-is-new'] = isNew;
+        $window.localStorage['luna-version'] = VERSION;
         callback();
       };
 
@@ -283,7 +286,16 @@ luna
         return $window.localStorage['luna-token'];
       };
 
+      auth.getVersion = function() {
+        return $window.localStorage['luna-version'];
+      }
+
       auth.isLoggedIn = function(){
+        if (auth.getVersion() != VERSION) {
+          auth.killTokens();
+          return false;
+        }
+
         var token = auth.getToken();
 
         if(token){
@@ -350,6 +362,13 @@ luna
         });
       };
 
+      auth.killTokens = function() {
+        $window.localStorage.removeItem('luna-token');
+        $window.localStorage.removeItem('luna-is-guest');
+        $window.localStorage.removeItem('luna-is-new');
+        $window.localStorage.removeItem('luna-version');
+      };
+
       auth.logIn = function(user){
         return $http.post('/login', user).success(function(data){
           auth.saveToken(data.token, false, false, function(){});
@@ -357,8 +376,7 @@ luna
       };
 
       auth.logOut = function(){
-        $window.localStorage.removeItem('luna-token');
-        $window.localStorage.removeItem('luna-is-guest');
+        auth.killTokens();
         $state.go('login');
       };
 
