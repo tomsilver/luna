@@ -1,3 +1,5 @@
 machines/tokens
 
 *.log
+
+*.pyc

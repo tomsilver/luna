@@ -25,7 +25,6 @@ def myResponseFunction(question):
 def myGuessFunction(responses):
 	guess = 0
 	for i,response in enumerate(responses):
-		print response
 		if dummyAnswers[i] in str(response).lower():
 			guess += 20
 	return guess
@@ -35,7 +34,8 @@ if __name__ == '__main__':
 	myInterviewQuestions = dummyQuestions
 	myPlayer = LunaPlayer(myToken, myResponseFunction, myGuessFunction)
 	myPlayer.createGame(myInterviewQuestions)
-	print myPlayer.games
+	print "Starting game",
+	print myPlayer.games.keys()[0]
 
 	while True:
 		myPlayer.update()

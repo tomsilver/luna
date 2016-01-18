@@ -4,12 +4,12 @@ import requests
 
 
 # Constants
-BASE_URL = 'http://localhost:3000/' #'http://ec2-52-23-169-221.compute-1.amazonaws.com:3000/'
+BASE_URL = 'http://ec2-52-23-169-221.compute-1.amazonaws.com:3000/'
 VERBOSITY = 1
 
 # Utilities
-def printv(s, v=VERBOSITY):
-	if v:
+def printv(s, v=1):
+	if v <= VERBOSITY:
 		print s
 
 def formatRequest(endpoint, token, data=None, baseUrl=BASE_URL):
@@ -64,17 +64,15 @@ class LunaGame(object):
 
 	def _updateOpQuestions(self, opQuestions):
 		if len(self.opQuestions) > 0:
-			print "Warning: Rejected attempt to update opponent questions after they were set."
+			printv("Warning: Rejected attempt to update opponent questions after they were set.", 2)
 			return
 
 		opQuestions = sorted(opQuestions, key=lambda q: int(q['questionNum']))
-		print opQuestions
 		self.opQuestions = [str(q['question']['question']) for q in opQuestions]
-		print self.opQuestions
 
 	def _updateOpResponses(self, opResponses):
 		if len(self.opResponses) > 0:
-			print "Warning: Rejected attempt to update opponent responses after they were set."
+			printv("Warning: Rejected attempt to update opponent responses after they were set.", 2)
 			return
 		
 		opResponses = sorted(opResponses, key=lambda r: int(r['questionNum']))
@@ -82,14 +80,14 @@ class LunaGame(object):
 
 	def _updateOpGuess(self, opGuess):
 		if self.opGuess > 0:
-			print "Warning: Rejected attempt to update opponent guess after it was set."
+			printv("Warning: Rejected attempt to update opponent guess after it was set.", 2)
 			return
 		
 		self.opGuess = opGuess
 
 	def _updateOutcome(self, outcome):
 		if self.outcome is not None:
-			print "Warning: Rejected attempt to update outcome after it was set."
+			printv("Warning: Rejected attempt to update outcome after it was set.", 2)
 			return
 		
 		self.outcome = outcome
@@ -98,7 +96,7 @@ class LunaGame(object):
 		newPhase = gameJson['phase']
 
 		if gameJson['active'] and (newPhase == self.phase):
-			printv ("No updates to game "+self.gameId)
+			printv("No updates to game "+self.gameId)
 			return
 
 		# update data
@@ -165,13 +163,15 @@ class LunaPlayer(object):
 		rargs = formatRequest(endpoint, self.token)
 		games = json.loads(requests.get(**rargs).content)
 		for game in games:
-			try:
-				savedGame = self.games[game['_id']]
-				savedGame.updateGame(game, self.token)
-			except KeyError:
-				printv("Loading game "+game['_id'])
-				lgame = self._lunaGameFromResponse(game)
-				self.games[game['_id']] = lgame
+			# ignore old games
+			if game['active']:
+				try:
+					savedGame = self.games[game['_id']]
+					savedGame.updateGame(game, self.token)
+				except KeyError:
+					printv("Loading game "+game['_id'])
+					lgame = self._lunaGameFromResponse(game)
+					self.games[game['_id']] = lgame
 
 	def _updateStats(self):
 		pass
