@@ -31,10 +31,10 @@ def myGuessFunction(responses):
 
 if __name__ == '__main__':
 	myToken = loadToken('machine1.csv')
-	myInterviewQuestions = dummyQuestions
 	myPlayer = LunaPlayer(myToken, myResponseFunction, myGuessFunction)
-	
-	if myPlayer.createGame(myInterviewQuestions):
+	myPlayer.setInterviewQuestions(dummyQuestions)
+
+	if myPlayer.createGame():
 		print "Starting game",
 		print myPlayer.games.keys()[0]
 

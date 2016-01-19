@@ -146,27 +146,38 @@ class LunaPlayer(object):
 		self.numGames = 0
 		self.numWins = 0
 		self.smartsRating = None
+		self.interviewQuestions = []
 
-	def _lunaGameFromResponse(self, resp, interviewQuestions=None):
-		if interviewQuestions is None:
-			interviewQuestions = resp['questions']
-		if len(interviewQuestions) != 5 and len(interviewQuestions) != 0:
-			raise Exception("You must provide 5 interview questions.")
-		return LunaGame(resp['_id'], resp['phase'], resp['turn'], interviewQuestions, self.responseFn, self.guessFn)
-
-	def createGame(self, interviewQuestions):
+	def setInterviewQuestions(self, interviewQuestions):
 		if len(interviewQuestions) != 5:
 			raise Exception("You must provide 5 interview questions.")
+		self.interviewQuestions = interviewQuestions
+
+	def createGame(self):
+		if len(self.interviewQuestions) != 5:
+			raise Exception("You must first set interview questions.")
 		endpoint = 'home'
 		rargs = formatRequest(endpoint, self.token, {})
 		newGame = json.loads(requests.post(**rargs).content)
 		if newGame:
-			newLunaGame =  self._lunaGameFromResponse(newGame, interviewQuestions)
+			newLunaGame =  self._lunaGameFromResponse(newGame, self.interviewQuestions)
 			self.games[newGame['_id']] = newLunaGame
 			return True
 		else:
 			print "Warning: Maximum active game number exceeded."
 			return False
+
+	def _lunaGameFromResponse(self, resp, interviewQuestions):
+		if len(interviewQuestions) != 5:
+			raise Exception("You must provide 5 interview questions.")
+		return LunaGame(resp['_id'], resp['phase'], resp['turn'], self.interviewQuestions, self.responseFn, self.guessFn)
+
+	def _loadGame(self, gameJson):
+		if len(gameJson['questions'])>0:
+			lgame = self._lunaGameFromResponse(gameJson, gameJson['questions'])
+		else:
+			lgame = self._lunaGameFromResponse(gameJson, self.interviewQuestions)
+		self.games[gameJson['_id']] = lgame
 
 	def _updateAllGames(self):
 		endpoint = 'home'
@@ -182,8 +193,7 @@ class LunaPlayer(object):
 						significantUpdate = True
 				except KeyError:
 					printv("Loading game "+game['_id'])
-					lgame = self._lunaGameFromResponse(game)
-					self.games[game['_id']] = lgame
+					self._loadGame(game)
 
 		if significantUpdate:
 			self.report()
