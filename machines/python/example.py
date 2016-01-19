@@ -33,8 +33,8 @@ if __name__ == '__main__':
 	myToken = loadToken('machine1.csv')
 	myInterviewQuestions = dummyQuestions
 	myPlayer = LunaPlayer(myToken, myResponseFunction, myGuessFunction)
-	for _ in range(5):
-		myPlayer.createGame(myInterviewQuestions)
+	
+	if myPlayer.createGame(myInterviewQuestions):
 		print "Starting game",
 		print myPlayer.games.keys()[0]
 

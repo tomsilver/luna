@@ -96,7 +96,7 @@ class LunaGame(object):
 		newPhase = gameJson['phase']
 
 		if gameJson['active'] and (newPhase == self.phase):
-			printv("No updates to game "+self.gameId)
+			printv("No updates to game "+self.gameId, 2)
 			return
 
 		# update data
@@ -121,8 +121,11 @@ class LunaGame(object):
 				self._guess(token)
 			else:
 				printv("Game complete.")
+				return True
 		else:
 			printv("Waiting.")
+
+		return False
 
 
 
@@ -140,12 +143,14 @@ class LunaPlayer(object):
 		self.responseFn = responseFn
 		self.guessFn = guessFn
 		self.games = {} # gameIds to LunaGames
-
+		self.numGames = 0
+		self.numWins = 0
+		self.smartsRating = None
 
 	def _lunaGameFromResponse(self, resp, interviewQuestions=None):
 		if interviewQuestions is None:
 			interviewQuestions = resp['questions']
-		if len(interviewQuestions) != 5:
+		if len(interviewQuestions) != 5 and len(interviewQuestions) != 0:
 			raise Exception("You must provide 5 interview questions.")
 		return LunaGame(resp['_id'], resp['phase'], resp['turn'], interviewQuestions, self.responseFn, self.guessFn)
 
@@ -155,33 +160,53 @@ class LunaPlayer(object):
 		endpoint = 'home'
 		rargs = formatRequest(endpoint, self.token, {})
 		newGame = json.loads(requests.post(**rargs).content)
-		newLunaGame =  self._lunaGameFromResponse(newGame, interviewQuestions)
-		self.games[newGame['_id']] = newLunaGame
+		if newGame:
+			newLunaGame =  self._lunaGameFromResponse(newGame, interviewQuestions)
+			self.games[newGame['_id']] = newLunaGame
+			return True
+		else:
+			print "Warning: Maximum active game number exceeded."
+			return False
 
 	def _updateAllGames(self):
 		endpoint = 'home'
 		rargs = formatRequest(endpoint, self.token)
 		games = json.loads(requests.get(**rargs).content)
+		significantUpdate = False
 		for game in games:
 			# ignore old games
 			if game['active']:
 				try:
 					savedGame = self.games[game['_id']]
-					savedGame.updateGame(game, self.token)
+					if savedGame.updateGame(game, self.token):
+						significantUpdate = True
 				except KeyError:
 					printv("Loading game "+game['_id'])
 					lgame = self._lunaGameFromResponse(game)
 					self.games[game['_id']] = lgame
 
+		if significantUpdate:
+			self.report()
+
 	def _updateStats(self):
-		pass
+		endpoint = 'profile'
+		rargs = formatRequest(endpoint, self.token)
+		playerJson = json.loads(requests.get(**rargs).content)
+		self.numGames = playerJson['player']['numGames']
+		self.numWins = playerJson['player']['numWins']
+		self.smartsRating = playerJson['player']['smartsRating']
 
 	def report(self):
-		pass
+		print "Total games:",
+		print self.numGames
+		print "Total wins:",
+		print self.numWins
+		print "Smarts Rating:",
+		print self.smartsRating
 
 	def update(self):
-		self._updateAllGames()
 		self._updateStats()
+		self._updateAllGames()
 
 
 
