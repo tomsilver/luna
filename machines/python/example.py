@@ -29,17 +29,21 @@ def myGuessFunction(responses):
 			guess += 20
 	return guess
 
+def startNewGame(player):
+	if player.createGame():
+		print "Starting game",
+		print player.games.keys()[0]
+
+
 if __name__ == '__main__':
 	myToken = loadToken('machine1.csv')
 	myPlayer = LunaPlayer(myToken, myResponseFunction, myGuessFunction)
 	myPlayer.setInterviewQuestions(dummyQuestions)
-
-	if myPlayer.createGame():
-		print "Starting game",
-		print myPlayer.games.keys()[0]
+	startNewGame(myPlayer)
 
 	while True:
-		myPlayer.update()
+		if myPlayer.update():
+			startNewGame(myPlayer)
 		time.sleep(10)
 
 

@@ -4,7 +4,7 @@ import requests
 
 
 # Constants
-BASE_URL = 'http://ec2-52-23-169-221.compute-1.amazonaws.com:3000/'
+BASE_URL = 'http://ec2-52-23-169-221.compute-1.amazonaws.com/'
 VERBOSITY = 1
 
 # Utilities
@@ -97,7 +97,7 @@ class LunaGame(object):
 
 		if gameJson['active'] and (newPhase == self.phase):
 			printv("No updates to game "+self.gameId, 2)
-			return
+			return False
 
 		# update data
 		self._updateOpQuestions(gameJson['opQuestions'])
@@ -107,25 +107,33 @@ class LunaGame(object):
 
 		# update phase and turn
 		self.phase = newPhase
+		self.active = gameJson['active']
 		self.turn = gameJson['turn']
+
+		if not self.active:
+			print "check1"
+			return False
 
 		if self.turn:
 			if self.phase < 2:
 				printv("Interviewing.")
 				self._interview(token)
+				return False
 			elif self.phase < 4:
 				printv("Responding.")
 				self._respond(token)
+				return False
 			elif self.phase < 6:
 				printv("Guessing.")
 				self._guess(token)
+				return False
 			else:
 				printv("Game complete.")
 				return True
 		else:
 			printv("Waiting.")
 
-		return False
+		return True
 
 
 
@@ -147,6 +155,7 @@ class LunaPlayer(object):
 		self.numWins = 0
 		self.smartsRating = None
 		self.interviewQuestions = []
+		self.finishedGames = []
 
 	def setInterviewQuestions(self, interviewQuestions):
 		if len(interviewQuestions) != 5:
@@ -179,13 +188,18 @@ class LunaPlayer(object):
 			lgame = self._lunaGameFromResponse(gameJson, self.interviewQuestions)
 		self.games[gameJson['_id']] = lgame
 
+	def _finishGame(self, gameJson):
+		if gameJson in self.finishedGames:
+			return False
+		self.finishedGames.append(gameJson)
+		return True
+
 	def _updateAllGames(self):
 		endpoint = 'home'
 		rargs = formatRequest(endpoint, self.token)
 		games = json.loads(requests.get(**rargs).content)
 		significantUpdate = False
 		for game in games:
-			# ignore old games
 			if game['active']:
 				try:
 					savedGame = self.games[game['_id']]
@@ -194,9 +208,13 @@ class LunaPlayer(object):
 				except KeyError:
 					printv("Loading game "+game['_id'])
 					self._loadGame(game)
+			else:
+				if self._finishGame(game):
+					significantUpdate = True
 
 		if significantUpdate:
 			self.report()
+		return significantUpdate
 
 	def _updateStats(self):
 		endpoint = 'profile'
@@ -216,8 +234,7 @@ class LunaPlayer(object):
 
 	def update(self):
 		self._updateStats()
-		self._updateAllGames()
-
+		return self._updateAllGames()
 
 
 
