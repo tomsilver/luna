@@ -1,3 +1,12 @@
+angular.module('ratingFilters', []).filter('ratingFilter', function() {
+    return function(rating) {
+        if (rating && !isNaN(rating)) {
+            return Math.round(rating * 100) / 100
+        }
+        return 'Not Set';
+    }
+})
+
 angular.module('phaseFilters', []).filter('phaseName', function() {
   return function(phase) {
     if (phase < 2) {

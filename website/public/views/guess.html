@@ -2,7 +2,7 @@
     <div class="card-header">
         <h2>Guess Phase<small ng-show="responses.length">Your opponent has answered your questions! You are now in the Guess Phase of the Luna Game, which is the final phase. Below are your opponent’s answers.
 </small></h2>
-    <button data-ui-sref="home.game.guess.guessCalculator({ id: gameID })" class="btn btn-primary btn-md bgm-teal" style="margin-top: 5px;" ng-show="!submitted && active">Guess Calculator</button>
+    <button data-ui-sref="home.game.guess.guessCalculator({ id: gameID })" class="btn btn-primary btn-md bgm-teal" style="margin-top: 5px;" ng-show="responses.length && (!submitted && active)">Guess Calculator</button>
     </div>
 
     <div class="card-body card-padding">
@@ -16,7 +16,9 @@
 	        </div>
 	        <form role="form" ng-submit="submitGuess()">
 	            <div class="form-group fg-line">
-		                <label for="guess">Based on these answers, please enter a guess of your opponent’s Smarts Rating.</label>
+		                <label for="guess">
+                            Based on these answers, please enter a guess of your opponent’s Smarts Rating (between 0 and 100).
+                        </label>
 		                <input type="number" class="form-control input-lg" ng-model="guess" placeholder="Enter guess" ng-readonly="submitted || !active" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" step="0.01" ng-minlength="1" max="100" min="0" required>
 		            </div>
 	        <div ng-show="!submitted">
@@ -25,8 +27,8 @@
                 </div>
             </div>
             <div ng-show="(phase <= 5) && (submitted && active)">
-                <h2><small>Waiting for opponent's guess...</small></h2>
-                <a class="btn btn-primary btn-block bgm-bluegray" href="" ng-click="goToNextGame()">Next Game</a>
+                <h2><small>Waiting for opponent's guess. In the meantime, you can start another game.</small></h2>
+                <a class="btn btn-primary btn-block bgm-bluegray" href="" ng-click="newGame()">Start Simultaneous Game</a>
             </div>
             <div ng-show="phase > 5 && active">
                 <h2><small>The Guess Phase is complete. Click on Result to view the result of the game.</small></h2>

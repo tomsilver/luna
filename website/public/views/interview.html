@@ -2,7 +2,7 @@
     <div class="card-header">
         <h2>Interview Phase<small>Please enter {{ N.length }} questions for the other player.
 		</small></h2>
-		<button ng-hide="isNew" data-ui-sref="home.game.interview.oldquestions({ id: gameID })" class="btn btn-primary btn-xs bgm-bluegray" style="margin-top: 5px;" ng-show="!submitted && active">Select from previous questions</button>
+		<button ng-hide="isNew" ng-click="openOldQuestions()" class="btn btn-primary btn-xs bgm-bluegray" style="margin-top: 5px;" ng-show="!submitted && active">Select from previous questions</button>
     </div>
 
     <div class="card-body card-padding">
@@ -12,13 +12,10 @@
                 	<label for="question{{ n }}" class="col-sm-1 control-label" >
                 		<i class="zmdi zmdi-triangle-up" ng-click="upShift(n)" style="cursor:pointer;" ng-show="!submitted && active"></i><i class="zmdi zmdi-triangle-down" ng-click="downShift(n)" style="cursor:pointer;" ng-show="!submitted && active"></i>
                 	</label>
-	                <div class="col-sm-10">
+	                <div class="col-sm-11">
 	                    <div class="fg-line">
 	                        <input type="text" class="form-control" ng-model="questions[n]" placeholder="Question {{ n+1 }}" ng-readonly="submitted || !active" ng-minlength="1" required>
 	                    </div>
-	                </div>
-	                <div class="col-sm-1">
-	                	<i class="zmdi zmdi-close" ng-click="eraseQuestion(n)" style="cursor:pointer;" ng-show="!submitted && active"></i>
 	                </div>
 	            </div>
 	        </div>
@@ -30,8 +27,8 @@
 	            </div>
 	        </div>
 	        <div ng-show="(phase <= 1) && (submitted && active)">
-	            <h2><small>Waiting for opponent's interview...</small></h2>
-	            <a class="btn btn-primary btn-block bgm-bluegray" href="" ng-click="goToNextGame()">Next Game</a>
+	            <h2><small>Waiting for opponent's interview. In the meantime, you can start another game.</small></h2>
+	            <a class="btn btn-primary btn-block bgm-bluegray" href="" ng-click="newGame()">Start Simultaneous Game</a>
 	        </div>
 	        <div ng-show="(phase > 1) && active">
 	            <h2><small>The Interview Phase is complete. Click on Response to view the next phase.</small></h2>
@@ -43,4 +40,6 @@
     </div>
 </div>
 
-<data ui-view></data>
+<div ng-show="o.oldQuestionsActive">
+	<data ui-view></data>
+</div>

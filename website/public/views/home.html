@@ -2,22 +2,17 @@
     <div class="card m-b-0" id="messages-main">
 
         <div class="ms-menu" data-ng-class="{ 'toggled': lunaCtrl.lvMenuStat }">
-            <div class="ms-block">
+            <div class="ms-block" style="padding-top: 10px;">
+                <h4 class="lead" style="font-size: 18px;">Smarts Rating: {{ smartsRating | ratingFilter }}</h4>
+                <h4 class="lead" style="font-size: 18px;">Game Wins: {{ gameWins }}</h4>
+            </div>
+            <hr style="margin: 5px;">
+            <div class="ms-block" style="padding-top: 10px;">
                 <a class="btn btn-primary btn-block bgm-green" href="" ng-click="newGame()">New Game</a>
             </div>
-            <div class="ms-block">
-                <div class="dropdown" uib-dropdown>
-                    <a class="btn btn-primary btn-block bgm-bluegray" href="" uib-dropdown-toggle>{{ currentOrPast }} Games <i class="caret m-l-5"></i></a>
-
-                    <ul class="dropdown-menu dm-icon w-100">
-                        <li><a href="" ng-click="getCurrentGames()">Current Games</a></li>
-                        <li><a href="" ng-click="getPastGames()">Past Games</a></li>
-
-                    </ul>
-                </div>
-            </div>
-
+            <hr style="margin-bottom: 0px;">
             <div class="listview lv-user m-t-20" style="max-height: 300px; overflow-y: scroll;">
+                <p style="text-align:center; font-size: 10px; text-transform:uppercase;">{{ currentOrPast }} Games</p>
 
                 <div class="lv-item media" ng-repeat="game in games  | orderBy: '-updateDate'" data-ui-sref-active="active">
                     <a data-ui-sref="home.game({id: game._id})"  ui-sref-opts="{reload: 'home.game'}">
@@ -29,13 +24,17 @@
                         </div>
                     </a>
                 </div>
+
+                <a class="lv-item media" ng-click="getPastGames()" ng-show="currentOrPast=='Current'" style="text-align:center; font-size: 10px; text-transform:uppercase; cursor:pointer;">Show Past Games</a>
+
+                <a class="lv-item media" ng-click="getCurrentGames()" ng-show="currentOrPast=='Past'" style="text-align:center; font-size: 10px; text-transform:uppercase; cursor:pointer;">Show Current Games</a>
             </div>
 
 
         </div>
  
         <div class="ms-body">
-            <section data-ui-view></section>
+            <section data-ui-view autoscroll="false"></section>
         </div>
     </div>
 </div>

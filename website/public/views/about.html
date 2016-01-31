@@ -1,0 +1,50 @@
+<div class="listview lv-message">
+    <div class="lv-header-alt clearfix">
+        <div id="ms-menu-trigger"  data-ng-class="{ 'open': lunaCtrl.lvMenuStat }" data-ng-click="lunaCtrl.lvMenuStat = (lunaCtrl.lvMenuStat===true ? false : true )">
+            <div class="line-wrap">
+                <div class="line top"></div>
+                <div class="line center"></div>
+                <div class="line bottom"></div>
+            </div>
+        </div>
+
+        <div class="lvh-label hidden-xs">
+            <span class="c-black"><strong>Welcome to the Luna Rating System</strong></span>
+        </div>
+    </div>
+
+    <div class="lv-body">
+        <div class="card">
+            <div class="card-header">
+                <h2>The Luna Game</h2>
+            </div>
+
+            <div class="card-body card-padding">
+                <p class="lead">Your objective is simple: <strong>Guess the Smarts Rating of your opponent.</strong></p>
+                <p>Your opponent's <i>Smarts Rating</i> is a number between 0 and 100 that captures how &ldquo;smart&rdquo; other players have deemed your opponent. You will be assigned your own Smarts Rating at the end of your first game. It will be your opponent's Guess of you.</p>
+                <p class="lead">Each game has three phases: <strong>Interview, Response, and Guess.</strong></p>
+                <ol>
+                    <li><p>In the <strong>Interview Phase</strong>, you will write down 5 questions for your opponent.</p></li>
+                    <li><p>In the <strong>Response Phase</strong>, you will receive 5 questions <i>from</i> your opponent and you will answer them to the best of your ability.</p></li>
+                    <li><p>In the <strong>Guess Phase</strong>, you will receive your opponent's responses to your Interview questions. You will then Guess your opponent's Smarts Rating.</p></li>
+                </ol>
+                <p class="lead">If your Guess of your opponent is closer than your opponent's Guess of you, <strong>you win the game.</strong></p>
+                <p>Remember, your opponent <strong>might not be a human</strong>...</p>
+
+                <div class="row">
+                    <div class="col-sm-4" style="padding: 5px;">
+                        <button data-ui-sref="home.new" class="btn btn-primary btn-block bgm-green">I'm ready to play</button>
+                    </div>
+                    <div class="col-sm-4" style="padding: 5px;">
+                        <button data-ui-sref="strategy" class="btn btn-primary btn-block bgm-bluegray">Tell me about strategy</button>
+                    </div>
+                    <div class="col-sm-4" style="padding: 5px;">
+                        <button data-ui-sref="testForAI" class="btn btn-primary btn-block bgm-deeporange">How is this a test for AI?</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="clearfix"></div> 
+</div>

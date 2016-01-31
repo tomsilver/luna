@@ -1,6 +1,8 @@
 luna
-    .config(function ($stateProvider, $urlRouterProvider, $locationProvider){
+    .config(function ($stateProvider, $urlRouterProvider, $locationProvider, $uiViewScrollProvider){
         $urlRouterProvider.otherwise("/landing");
+
+        $uiViewScrollProvider.useAnchorScroll();
 
         $stateProvider
             
@@ -9,6 +11,12 @@ luna
                 abstract: true,
                 url: '/home',
                 templateUrl: 'views/home.html',
+                controller: 'homeCtrl',
+                resolve: {
+                  player: ['players', function(players) {
+                    return players.get();
+                  }]
+                },
                 onEnter: ['$state', 'auth', function($state, auth){
                   if(!auth.isLoggedIn()){
                     $state.go('login');
@@ -16,42 +24,11 @@ luna
               }]
             })
 
-            //New game
+            //Default home
             .state('home.new', {
-                url: '',
-                templateUrl: 'views/new.html',
-                controller: 'newCtrl'
-            })
-
-            //Help
-            .state('home.help', {
-                url: '/help',
-                templateUrl: 'views/new.html'
-            })
-
-            //Strategy
-            .state('home.strategy', {
-                url: '/strategy',
-                templateUrl: 'views/strategy.html'
-            })
-
-            //Test for AI
-            .state('home.testForAI', {
-                url: '/testForAI',
-                templateUrl: 'views/testForAI.html'
-            })
-
-            //Contact
-            .state('contact', {
-                url: '/contact',
-                templateUrl: 'views/contact.html'
-            })
-
-            //Landing
-            .state('landing', {
-                url: '/landing',
-                templateUrl: 'views/landing.html',
-                controller: 'landingCtrl'
+              url: '/new',
+              templateUrl: 'views/new.html',
+              controller: 'newCtrl'
             })
 
             //Game
@@ -137,6 +114,37 @@ luna
                       return games.get($stateParams.id);
                     }]
                   }
+            })
+
+            //Contact
+            .state('contact', {
+                url: '/contact',
+                templateUrl: 'views/contact.html'
+            })
+
+            //Landing
+            .state('landing', {
+                url: '/landing',
+                templateUrl: 'views/landing.html',
+                controller: 'landingCtrl'
+            })
+
+            //About
+            .state('about', {
+                url: '/about',
+                templateUrl: 'views/about.html'
+            })
+
+            //Strategy
+            .state('strategy', {
+                url: '/strategy',
+                templateUrl: 'views/strategy.html'
+            })
+
+            //Test for AI
+            .state('testForAI', {
+                url: '/testForAI',
+                templateUrl: 'views/testForAI.html'
             })
             
         

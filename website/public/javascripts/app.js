@@ -1,5 +1,6 @@
 
 var luna = angular.module('luna', [
+    'ratingFilters',
 	'phaseFilters',
 	'colorFilters',
 	'turnFilters',

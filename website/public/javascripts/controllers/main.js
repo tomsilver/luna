@@ -8,10 +8,13 @@ luna
         '$state',
         '$scope',
         '$location',
+        '$anchorScroll',
         'games',
         'growlService',
-        function($timeout, $state, $scope, $location, games, growlService){
+        function($timeout, $state, $scope, $location, $anchorScroll, games, growlService){
         
+        $anchorScroll.yOffset = 80;
+
         // Detect Mobile Browser
         if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
            angular.element('html').addClass('ismobile');
@@ -148,7 +151,7 @@ luna
 
         $scope.registerGuest = function() {
             auth.registerGuest(function(){
-                $state.go('home.new');
+                $state.go('about');
             });    
         };
 
@@ -176,7 +179,7 @@ luna
                 auth.register(user).error(function(error){
                   $scope.error = error;
                 }).then(function(){
-                  $state.go('home.new');
+                  $state.go('about');
                 });
             });
           };
@@ -302,6 +305,18 @@ luna
     //=================================================
     // Game
     //=================================================
+    .controller('homeCtrl', [
+        '$scope',
+        'players',
+        function($scope, players) {
+            
+        /* put players here for smarts rating */
+        var player = players.player.player;
+
+        $scope.smartsRating = player.smartsRating;
+        $scope.gameWins = player.numWins;
+    }])
+
     .controller('newCtrl', [
         '$scope',
         '$location',
@@ -403,11 +418,12 @@ luna
     .controller('interviewCtrl', [
         '$scope',
         '$stateParams',
+        '$state',
         'growlService', 
         'auth',
         'games',
         'game', 
-        function($scope, $stateParams, growlService, auth, games, game){
+        function($scope, $stateParams, $state, growlService, auth, games, game){
 
         $scope.isNew = false;
 
@@ -480,6 +496,15 @@ luna
                     });
                 });
             }
+        };
+
+        $scope.openOldQuestions = function() {
+            $state.go('home.game.interview.oldquestions', { id: $scope.gameID });
+            $scope.o.oldQuestionsActive = true;
+        };
+
+        $scope.o.closeOldQuestions = function () {
+            $scope.o.oldQuestionsActive = false;
         };
 
     }])

@@ -1,7 +1,9 @@
 <div class="col-sm-6" ng-class="{'col-sm-6': o.oldQuestionsActive, 'col-sm-12': !o.oldQuestionsActive}">
     <div class="card" style="margin-top: 10px;">
-        <div class="card-header" style="margin-bottom:-25px; background-color: #F8F8F8;">
-            <h2>Select from previous questions.</h2>
+        <div class="card-header" style="background-color: #F8F8F8;">
+            <h2 style="display:inline-block;">Select from previous questions.</h2>
+
+            <i ng-click="o.closeOldQuestions()" class="zmdi zmdi-close" style="cursor:pointer; float: right;"></i>
         </div>
 
         <div class="lv-body" style="padding-bottom:50px; max-height: 350px; overflow-y: scroll;">
