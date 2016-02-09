@@ -63,6 +63,12 @@ luna
         $scope.games = [];
         $scope.notifiedGamesCount = 0;
 
+        /* for consent */
+        $scope.signUp = {
+            'v': true,
+            'c': false
+        };
+
         $scope.getCurrentGames = function(callback) {
             games.getCurrentGames(function() {
                 $scope.games = [];
@@ -146,11 +152,37 @@ luna
     .controller('landingCtrl', [
         '$scope',
         '$state',
+        function($scope, $state){
+
+        $scope.proceedAsGuest = function() {
+            $scope.signUp.v = false;
+            $state.go('consent');
+        };
+
+        $scope.proceedAsSignUp = function() {
+            $scope.signUp.v = true;
+            $state.go('consent');
+        };
+
+    }])
+
+    // =========================================================================
+    // Consent
+    // =========================================================================
+    .controller('consentCtrl', [
+        '$scope',
+        '$state',
         'auth',
         function($scope, $state, auth){
 
+        $scope.register = function() {
+            $scope.signUp.c = true;
+            $state.go('register');   
+        };
+
         $scope.registerGuest = function() {
             auth.registerGuest(function(){
+                $scope.signUp.c = true;
                 $state.go('about');
             });    
         };
@@ -166,6 +198,12 @@ luna
         'auth',
         'md5',
         function($scope, $state, auth, md5){
+
+          // need to consent before signing up
+          if (!$scope.signUp.c) {
+            $state.go('consent');
+          }
+
           $scope.user = {};
 
           $scope.hashUser = function(user, callback) {

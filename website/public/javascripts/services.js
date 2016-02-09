@@ -377,7 +377,7 @@ luna
 
       auth.logOut = function(){
         auth.killTokens();
-        $state.go('login');
+        $state.go('landing');
       };
 
       return auth;

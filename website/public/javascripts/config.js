@@ -13,8 +13,13 @@ luna
                 templateUrl: 'views/home.html',
                 controller: 'homeCtrl',
                 resolve: {
-                  player: ['players', function(players) {
-                    return players.get();
+                  player: ['$state', 'auth', 'players', function($state, auth, players) {
+                    if(!auth.isLoggedIn()){
+                      $state.go('login');
+                    }
+                    else {
+                      return players.get();
+                    }
                   }]
                 },
                 onEnter: ['$state', 'auth', function($state, auth){
@@ -127,6 +132,13 @@ luna
                 url: '/landing',
                 templateUrl: 'views/landing.html',
                 controller: 'landingCtrl'
+            })
+
+            //Landing
+            .state('consent', {
+                url: '/consent',
+                templateUrl: 'views/consent.html',
+                controller: 'consentCtrl'
             })
 
             //About

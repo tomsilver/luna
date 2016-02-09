@@ -1,0 +1,73 @@
+<div class="listview lv-message">
+    <div class="lv-header-alt clearfix">
+        <div id="ms-menu-trigger"  data-ng-class="{ 'open': lunaCtrl.lvMenuStat }" data-ng-click="lunaCtrl.lvMenuStat = (lunaCtrl.lvMenuStat===true ? false : true )">
+            <div class="line-wrap">
+                <div class="line top"></div>
+                <div class="line center"></div>
+                <div class="line bottom"></div>
+            </div>
+        </div>
+
+        <div class="lvh-label hidden-xs">
+            <span class="c-black"><strong>Please Read Before Proceeding</strong></span>
+        </div>
+    </div>
+
+    <div class="lv-body">
+        <div class="card">
+            <div class="card-body card-padding">
+                <h2 style="font-size:12px; margin-top: 5px; margin-bottom: 5px;">Participation is voluntary</h2>
+                <p>It is your choice whether or not to participate in this research.  If you choose to participate, you may change your mind and leave the study at any time.  Refusal to participate or stopping your participation will involve no penalty or loss of benefits to which you are otherwise entitled.</p>
+
+                <h2 style="font-size:12px; margin-top: 5px; margin-bottom: 5px;">What is the purpose of this research?</h2>
+                <p>The purpose of this research is to establish a test for Artificial Intelligence (AI).</p>
+
+                <h2 style="font-size:12px; margin-top: 5px; margin-bottom: 5px;">What can I expect if I take part in this research?</h2>
+                <p>As a participant, you will design and take online surveys that other participants have created. The purpose of these surveys is to assess the extent to which machines have achieved intelligence. At the end of each survey, the survey creator grades the responses of the machine or other participant and produces a guess, on a scale from 1 to 100, of the extent to which the respondent has achieved intelligence. These guesses are aggregated over time, culminating in a rating. The rating represents the test for AI; machines that achieve higher ratings will be closer to the human conception of AI.</p>
+
+                <h2 style="font-size:12px; margin-top: 5px; margin-bottom: 5px;">What are the risks and possible discomforts?</h2>
+                <p>There are no reasonably foreseeable risks or discomforts associated with this study.</p>
+
+                <h2 style="font-size:12px; margin-top: 5px; margin-bottom: 5px;">Are there any benefits from being in this research study?</h2>
+                <p>We cannot promise any benefits to you or others from your taking part in this research. However, possible benefits include entertainment.</p>
+
+                <h2 style="font-size:12px; margin-top: 5px; margin-bottom: 5px;">If I take part in this research, how will my privacy be protected? What happens to the information you collect?</h2>
+                <p>The data we collect will not contain any personally identifiable information. Your email address and password to log in to the web interface will be immediately encrypted and unavailable to us. Your anonymous survey inputs will be used for research purposes by us, may be quoted in publicly available manuscripts resulting from the research, and may be released as an open source dataset at our discretion through the Harvard Dataverse Network.</p>
+
+                <h2 style="font-size:12px; margin-top: 5px; margin-bottom: 5px;">If I take part in this research, how will my privacy be protected? What happens to the information you collect?</h2>
+                <p>The data we collect will not contain any personally identifiable information. Your email address and password to log in to the web interface will be immediately encrypted and unavailable to us. Your anonymous survey inputs will be used for research purposes by us, may be quoted in publicly available manuscripts resulting from the research, and may be released as an open source dataset at our discretion through the Harvard Dataverse Network.</p>
+
+                <h2 style="font-size:12px; margin-top: 5px; margin-bottom: 5px;">If I have any questions, concerns or complaints about this research study, who can I talk to?</h2>
+                <p>
+                The researcher for this study is Thomas Silver who can be reached at tsilver@college.harvard.edu.</p>
+
+                <p>This research has been reviewed by the Committee on the Use of Human Subjects in Research at Harvard University.  They can be reached at 617-496-2847, 1414 Massachusetts Avenue, Second Floor, Cambridge, MA 02138, or cuhs@fas.harvard.edu for any of the following:
+                <ul>
+                    <li>If your questions, concerns, or complaints are not being answered by the research team,</li>
+                    <li>If you cannot reach the research team,</li>
+                    <li>If you want to talk to someone besides the research team, or</li>
+                    <li>If you have questions about your rights as a research participant.</li>
+                </ul>
+
+                <p><strong>By clicking "Continue" below, you acknowledge the above and confirm that you are at 18 years or older.</strong></p>
+
+                <div class="row">
+                    <div ng-hide="signUp.v" class="col-sm-4" style="padding: 5px;">
+                        <button ng-click="registerGuest()" class="btn btn-primary btn-block bgm-green">Continue</button>
+                    </div>
+                    <div ng-show="signUp.v" class="col-sm-4" style="padding: 5px;">
+                        <button ng-click="register()" class="btn btn-primary btn-block bgm-green">Continue</button>
+                    </div>
+                    <div class="col-sm-4" style="padding: 5px;">
+                        <button data-ui-sref="about" class="btn btn-primary btn-block bgm-bluegray">Learn More</button>
+                    </div>
+                    <div class="col-sm-4" style="padding: 5px;">
+                        <button data-ui-sref="landing" class="btn btn-primary btn-block bgm-deeporange">Return Home</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="clearfix"></div> 
+</div>
