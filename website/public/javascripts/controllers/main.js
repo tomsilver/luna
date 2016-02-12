@@ -347,12 +347,23 @@ luna
         '$scope',
         'players',
         function($scope, players) {
-            
-        /* put players here for smarts rating */
-        var player = players.player.player;
 
-        $scope.smartsRating = player.smartsRating;
-        $scope.gameWins = player.numWins;
+        $scope.playerStats = {
+            smartsRating: null,
+            gameWins: 0
+        };
+
+        $scope.reloadPlayerStats = function(callback) {
+            players.get();
+            var player = players.player.player;
+
+            $scope.playerStats.smartsRating = player.smartsRating;
+            $scope.playerStats.gameWins = player.numWins;
+
+            callback();
+        };
+
+        $scope.reloadPlayerStats(function() {});
     }])
 
     .controller('newCtrl', [
@@ -399,7 +410,9 @@ luna
                 nextState = 'home.game.guess';
             }
             $scope.phase = phase;
-            $state.go(nextState).then(callback);
+            $state.go(nextState).then(function() {
+                $scope.reloadPlayerStats(callback);
+            });
         };
 
         $scope.deactivateGame = function() {
@@ -683,11 +696,12 @@ luna
     // Final
     .controller('finalCtrl', [
         '$scope',
+        '$state',
         '$stateParams',
         'auth',
         'games',
         'game', 
-        function($scope, $stateParams, auth, games, game){
+        function($scope, $state, $stateParams, auth, games, game){
 
         $scope.isNew = auth.isNew();
 
@@ -700,13 +714,10 @@ luna
             $scope.oldSmartsRating = game.oldSmartsRating;
             $scope.opMachine = game.opMachine;
 
-            console.log($scope.opMachine);
-
             if (games.current)
-                games.deactivate($stateParams.id, function() {});
+                games.deactivate($stateParams.id);
 
             auth.notNew();
-
         }
 
     }])

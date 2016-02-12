@@ -3,8 +3,8 @@
 
         <div class="ms-menu" data-ng-class="{ 'toggled': lunaCtrl.lvMenuStat }">
             <div class="ms-block" style="padding-top: 10px;">
-                <h4 class="lead" style="font-size: 18px;">Smarts Rating: {{ smartsRating | ratingFilter }}</h4>
-                <h4 class="lead" style="font-size: 18px;">Game Wins: {{ gameWins }}</h4>
+                <h4 class="lead" style="font-size: 18px;">Smarts Rating: {{ playerStats.smartsRating | ratingFilter }}</h4>
+                <h4 class="lead" style="font-size: 18px;">Game Wins: {{ playerStats.gameWins }}</h4>
             </div>
             <hr style="margin: 5px;">
             <div class="ms-block" style="padding-top: 10px;">
