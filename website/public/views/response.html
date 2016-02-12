@@ -1,6 +1,6 @@
 <div class="card">
     <div class="card-header">
-        <h2>Response Phase<small ng-show="questions.length">Your opponent has sent you questions! Please answer the following questions to the best of your ability.
+        <h2>Response Phase<small ng-show="questions.length">The other player has sent you questions! Please answer the following questions to the best of your ability.
 </small></h2>
     </div>
 
@@ -19,7 +19,7 @@
                 </div>
             </div>
             <div ng-show="(phase <= 3) && (submitted && active)">
-                <h2><small>Waiting for opponent's responses. In the meantime, you can start another game.</small></h2>
+                <h2><small>Waiting for the other player's responses. In the meantime, you can start another game.</small></h2>
                 <a class="btn btn-primary btn-block bgm-bluegray" href="" ng-click="newGame()">Start Simultaneous Game</a>
             </div>
             <div ng-show="phase > 3 && active">
