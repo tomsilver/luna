@@ -364,6 +364,8 @@ luna
             $scope.findMyTurnGame(function(myTurnGame) {
                 if (myTurnGame)
                     $location.path('/home/'+myTurnGame._id);
+                else
+                    $scope.newGame();
             });
         });
     }])
