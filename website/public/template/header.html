@@ -46,7 +46,7 @@
     </li>
 
     <li class="pull-right">
-        <ul class="top-menu" ng-show="isLoggedIn()">
+        <ul class="top-menu">
 
             <li>
                 <div
@@ -57,7 +57,7 @@
                 </div>
             </li>
             
-            <li class="dropdown" ng-click="hideNotifications()" uib-dropdown>
+            <li ng-show="isLoggedIn()" class="dropdown" ng-click="hideNotifications()" uib-dropdown>
                 <a uib-dropdown-toggle href="">
                     <i class="tm-icon zmdi zmdi-notifications"></i>
                     <i class="tmn-counts" ng-show="notifiedGamesCount && !silenceNotifs">{{ notifiedGamesCount }}</i>
@@ -85,7 +85,7 @@
                 </div>
             </li>
             
-            <li class="dropdown" uib-dropdown>
+            <li ng-show="isLoggedIn()" class="dropdown" uib-dropdown>
                 <a uib-dropdown-toggle href="">
                     <i class="tm-icon zmdi zmdi-more-vert"></i>
                 </a>
