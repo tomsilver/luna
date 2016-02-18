@@ -207,9 +207,10 @@ luna
           $scope.user = {};
 
           $scope.hashUser = function(user, callback) {
-            userCopy = angular.copy(user);
-            userCopy.username = md5.createHash(userCopy.username || '');
-            callback(userCopy);
+            // userCopy = angular.copy(user);
+            // userCopy.username = md5.createHash(userCopy.username || '');
+            // callback(userCopy);
+            callback(angular.copy(user));
           };
 
           $scope.register = function(){
