@@ -20,13 +20,8 @@ var Response = mongoose.model('Response');
 var Game = mongoose.model('Game');
 
 /* create reusable transporter object using the default SMTP transport */
-var smtpTransport = nodemailer.createTransport("SMTP",{
-    service: "Gmail",
-    auth: {
-        user: "tomssilver@gmail.com",
-        pass: process.env.GMAIL
-    }
-});
+var transportStr = 'smtps://postmaster@luna-game.com:'+process.env.MAILGUN+'@smtp.mailgun.org';
+var transporter = nodemailer.createTransport(transportStr);
 
 /* helper functions */
 var add = function(a, b) {
@@ -494,6 +489,44 @@ router.get('/home/:game/deactivate', auth, function(req, res) {
 	});
 });
 
+var getPlayerFromGame = function(game, playerNum, callback) {
+	var playerID;
+	if (playerNum == 1) {
+		playerID = game['player1'];
+	}
+	else {
+		playerID = game['player2'];
+	}
+
+	Player.find({ _id: playerID }, function(err, player) {
+	    if (err) { return err; }
+	    if (!player) { return next(new Error('can\'t find player')); }
+	    if (player.length > 1) { return next(new Error('found more than one player')) };
+		callback(player[0]);
+	});
+};
+
+var sendNotificationEmail = function(player) {
+	if (!player.isGuest) {
+		// setup e-mail data with unicode symbols
+		var mailOptions = {
+		    from: 'Luna Game <noreply@luna-game.com>', // sender address
+		    to: player.username, // list of receivers
+		    subject: "It's your turn to play!", // Subject line
+		    text: "It's your turn to play a Luna Game. Visit http://luna-game.com to play!", // plaintext body
+		    html: "It's your turn to play a Luna Game. Visit <a href='http://luna-game.com'>http://luna-game.com</a> to play!" // html body
+		};
+
+		// send mail with defined transport object
+		transporter.sendMail(mailOptions, function(error, info){
+		    if(error){
+		        return console.log(error);
+		    }
+		    console.log('Message sent: ' + info.response);
+		});
+	}
+};
+
 var saveGameInMongo = function(player, game, callback) {
 	var op = opNum(player, game);
 	game['notif'+String(op)] = true;
@@ -509,26 +542,8 @@ var saveGameInMongo = function(player, game, callback) {
 	  });
 	});
 
-
-	/* setup e-mail data with unicode symbols */
-	var mailOptions = {
-	    from: "Luna <noreply@luna-game.com>", // sender address
-	    to: "tsilver@college.harvard.edu", // list of receivers
-	    subject: "Hello ✔", // Subject line
-	    text: "Hello world ✔", // plaintext body
-	    html: "<b>Hello world ✔</b>" // html body
-	}
-	
-	// send mail with defined transport object
-	smtpTransport.sendMail(mailOptions, function(error, response){
-	    if(error){
-	        console.log(error);
-	    }else{
-	        console.log("Message sent: " + response.message);
-	    }
-
-	    // if you don't want to use this transport object anymore, uncomment following line
-	    //smtpTransport.close(); // shut down the connection pool, no more messages
+	getPlayerFromGame(game, op, function(opponent) {
+		sendNotificationEmail(opponent);
 	});
 };
 
