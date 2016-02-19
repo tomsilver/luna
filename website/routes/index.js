@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var nodemailer = require('nodemailer');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -17,6 +18,15 @@ var Player = mongoose.model('Player');
 var Question = mongoose.model('Question');
 var Response = mongoose.model('Response');
 var Game = mongoose.model('Game');
+
+/* create reusable transporter object using the default SMTP transport */
+var smtpTransport = nodemailer.createTransport("SMTP",{
+    service: "Gmail",
+    auth: {
+        user: "tomssilver@gmail.com",
+        pass: process.env.GMAIL
+    }
+});
 
 /* helper functions */
 var add = function(a, b) {
@@ -497,6 +507,28 @@ var saveGameInMongo = function(player, game, callback) {
 		{ new: true }, function(err, game) {
 			callback(game);
 	  });
+	});
+
+
+	/* setup e-mail data with unicode symbols */
+	var mailOptions = {
+	    from: "Luna <noreply@luna-game.com>", // sender address
+	    to: "tsilver@college.harvard.edu", // list of receivers
+	    subject: "Hello ✔", // Subject line
+	    text: "Hello world ✔", // plaintext body
+	    html: "<b>Hello world ✔</b>" // html body
+	}
+	
+	// send mail with defined transport object
+	smtpTransport.sendMail(mailOptions, function(error, response){
+	    if(error){
+	        console.log(error);
+	    }else{
+	        console.log("Message sent: " + response.message);
+	    }
+
+	    // if you don't want to use this transport object anymore, uncomment following line
+	    //smtpTransport.close(); // shut down the connection pool, no more messages
 	});
 };
 
