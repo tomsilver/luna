@@ -181,7 +181,7 @@ luna
             .state('login', {
               url: '/login',
               templateUrl: 'views/login.html',
-              controller: 'AuthCtrl',
+              controller: 'LoginCtrl',
               onEnter: ['$state', 'auth', function($state, auth){
                 if(auth.isLoggedIn()){
                   $state.go('home.new');
@@ -193,7 +193,7 @@ luna
             .state('register', {
               url: '/register',
               templateUrl: 'views/register.html',
-              controller: 'AuthCtrl',
+              controller: 'RegisterCtrl',
               onEnter: ['$state', 'auth', function($state, auth){
                 if(auth.isLoggedIn()){
                   $state.go('home.new');
@@ -205,7 +205,7 @@ luna
             .state('registerGuest', {
               url: '/registerGuest',
               templateUrl: 'views/registerGuest.html',
-              controller: 'AuthCtrl',
+              controller: 'RegisterCtrl',
               onEnter: ['$state', 'auth', function($state, auth){
                 if(!auth.isGuest()){
                   $state.go('register');
@@ -217,7 +217,7 @@ luna
             .state('registerMachine', {
               url: '/registerMachine',
               templateUrl: 'views/registerMachine.html',
-              controller: 'AuthCtrl'
+              controller: 'RegisterCtrl'
             })
 
             //404

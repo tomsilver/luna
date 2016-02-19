@@ -190,9 +190,40 @@ luna
     }])
 
     //=================================================
-    // Auth
+    // Register
     //=================================================
-    .controller('AuthCtrl', [
+    .controller('LoginCtrl', [
+        '$scope',
+        '$state',
+        'auth',
+        'md5',
+        function($scope, $state, auth, md5){
+
+          $scope.user = {};
+
+          $scope.hashUser = function(user, callback) {
+            // userCopy = angular.copy(user);
+            // userCopy.username = md5.createHash(userCopy.username || '');
+            // callback(userCopy);
+            callback(angular.copy(user));
+          };
+
+          $scope.logIn = function(){
+            $scope.hashUser($scope.user, function(user) {
+                auth.logIn(user).error(function(error){
+                  $scope.error = error;
+                }).then(function(){
+                  $state.go('home.new');
+                });
+            });
+          };
+
+        }])
+
+    //=================================================
+    // Register
+    //=================================================
+    .controller('RegisterCtrl', [
         '$scope',
         '$state',
         'auth',
@@ -219,16 +250,6 @@ luna
                   $scope.error = error;
                 }).then(function(){
                   $state.go('about');
-                });
-            });
-          };
-
-          $scope.logIn = function(){
-            $scope.hashUser($scope.user, function(user) {
-                auth.logIn(user).error(function(error){
-                  $scope.error = error;
-                }).then(function(){
-                  $state.go('home.new');
                 });
             });
           };
