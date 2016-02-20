@@ -169,13 +169,13 @@ luna
         });;
       };
 
-      o.create = function(callback) {
-        return $http.post('/home', {}, {
-          headers: {Authorization: 'Bearer '+auth.getToken()}
-        }).success(function(data){
-          callback(data);
-        });
-      };
+      // o.create = function(callback) {
+      //   return $http.post('/home', {}, {
+      //     headers: {Authorization: 'Bearer '+auth.getToken()}
+      //   }).success(function(data){
+      //     callback(data);
+      //   });
+      // };
 
       o.findMyTurnGame = function(callback) {
         var myTurnGame = false;
@@ -198,11 +198,11 @@ luna
         });
       };
 
-      o.addQuestions = function(id, questions, callback) {
-        return $http.post('/home/'+ id +'/interview', questions, {
+      o.addQuestions = function(questions, callback) {
+        return $http.post('/home/', questions, {
           headers: {Authorization: 'Bearer '+auth.getToken()}
         }).success(function(game){
-          o.updateGame(id, game, callback);
+          callback(game);
         });
       };
 

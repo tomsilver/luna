@@ -48,6 +48,13 @@ luna
                   }
             })
 
+            //Pre Interview
+            .state('home.preinterview', {
+                url: '/interview',
+                templateUrl: 'views/pinterview.html',
+                controller: 'preinterviewCtrl'
+            })
+
             //Interview
             .state('home.game.interview', {
                 url: '/interview',
@@ -61,14 +68,13 @@ luna
             })
 
             //Old Questions
-            .state('home.game.interview.oldquestions', {
+            .state('home.preinterview.oldquestions', {
                 url: '/oldquestions',
                 templateUrl: 'views/oldquestions.html',
                 controller: 'oldquestionsCtrl',
                 resolve: {
-                    game: ['$stateParams', 'questions', 'games', function($stateParams, questions, games) {
-                      questions.findOldQuestions();
-                      return games.get($stateParams.id);
+                    oldQuestions: ['questions', function(questions) {
+                      return questions.findOldQuestions();
                     }]
                   }
             })

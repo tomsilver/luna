@@ -405,14 +405,12 @@ router.post('/home', auth, function(req, res, next) {
 					  					});
 					  	game.save(function(err, game){
 						    if(err){ return next(err); }
-						    	individualizeGame(player, game, function(indvGame) {
-						    		res.json(indvGame);
-						    	});    
+						    	submitInterview(player, req.body.questions, game, res);    
 						  });
 					  }
 					  else {
 					  	individualizeGame(player, game, function(indvGame) {
-						   	res.json(indvGame);
+						   	submitInterview(player, req.body.questions, game, res);
 						});
 					  }
 				    });
@@ -439,6 +437,7 @@ router.get('/home', auth, function(req, res, next) {
 
 /* single game routes */
 router.param('game', function(req, res, next, id) {
+	if (id !== 'interview') {
   	var query = Game.findById(id);
 	query.exec(function (err, game){
 	  if (err) { return next(err); }
@@ -447,6 +446,7 @@ router.param('game', function(req, res, next, id) {
       req.game = game;
 	  return next();
   });
+}
 });
 
 router.get('/home/:game', auth, function(req, res) {
@@ -543,48 +543,49 @@ var saveGameInMongo = function(player, game, callback) {
 	});
 
 	getPlayerFromGame(game, op, function(opponent) {
-		sendNotificationEmail(opponent);
+		if (opponent)
+			sendNotificationEmail(opponent);
 	});
 };
 
 /* interview */
-router.post('/home/:game/interview', auth, function(req, res, next) {
-  var questionInputs = req.body.questions;
-  var questions = [];
-  var i = 0;
+var submitInterview = function(player, userQuestions, game, res) {
+	var questionInputs = userQuestions;
+	var questions = [];
+	var i = 0;
 
-  var saveGame = function(player) {
-  	var qs = [];
-  	for (var i=0; i<questions.length; i++){
-  		qs.push({
-  			question: questions[i],
-  			questionNum: i
-  		});
-  	}
-  	req.game['questions'+String(playerNum(player, req.game))] = qs;
-  	saveGameInMongo(player, req.game, function(game) {
+	var saveGame = function(player) {
+		var qs = [];
+		for (var i=0; i<questions.length; i++){
+			qs.push({
+				question: questions[i],
+				questionNum: i
+			});
+		}
+		game['questions'+String(playerNum(player, game))] = qs;
+		saveGameInMongo(player, game, function(game) {
 		individualizeGame(player, game, function(indvGame) {
 			res.json(indvGame);
 		});
 	}); 
-  };
+	};
 
-  var saveQuestions = function(player) {
-  	var question;
-  	var questionInput;
-  	
-  	if (questionInputs.length == 0)
-  		saveGame(player);
-  	else {
-  		var nextQuestion = questionInputs.shift();
+	var saveQuestions = function(player) {
+		var question;
+		var questionInput;
+		
+		if (questionInputs.length == 0)
+			saveGame(player);
+		else {
+			var nextQuestion = questionInputs.shift();
 
-  		questionInput = {
+			questionInput = {
 	  		player: player,
 	  		question: nextQuestion
 	  	}
 	  	
-  		/* see if this question has already been asked */
-  		Question.findOne(questionInput, function(err, question) {
+			/* see if this question has already been asked */
+			Question.findOne(questionInput, function(err, question) {
 		    if (err) { return next(err); }
 
 		    /* new question */
@@ -605,14 +606,11 @@ router.post('/home/:game/interview', auth, function(req, res, next) {
 		  	});
 
 		});
-  	}
-  }
+		}
+	}
 
-  playerFromRequest(req, function(player) {
-  	saveQuestions(player);
-  });
-
-});
+	saveQuestions(player);
+};
 
 
 /* response */

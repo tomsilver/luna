@@ -92,15 +92,7 @@ luna
         };
 
         $scope.newGame = function() {
-            games.create(function(newGame) {
-                if (newGame == false) {
-                    growlService.growl('You may only have 5 active games.')
-                }
-                else {
-                    $location.path('/home/'+newGame._id);
-                    $scope.getCurrentGames(function() {});
-                }
-            });
+            $state.go('home.preinterview');
         };
 
         $scope.findMyTurnGame = function(callback) {
@@ -488,18 +480,21 @@ luna
         });
 
     }])
-
-    // Interview
-    .controller('interviewCtrl', [
+    
+    // Preinterview
+    .controller('preinterviewCtrl', [
         '$scope',
-        '$stateParams',
         '$state',
+        '$location',
         'growlService', 
         'auth',
         'games',
-        'game', 
-        function($scope, $stateParams, $state, growlService, auth, games, game){
+        function($scope, $state, $location, growlService, auth, games){
 
+        $scope.N = [0, 1, 2, 3, 4];
+        $scope.phase = 1;
+        $scope.active = true;
+        $scope.submitted = false;
         $scope.isNew = false;
 
         if (auth.isNew()) {
@@ -508,21 +503,11 @@ luna
             $scope.isNew = true;
         }
 
-        $scope.gameID = game._id;
         $scope.questions = [];
         $scope.submitted = false;
 
         $scope.o = {};
         $scope.o.oldQuestionsActive = false;
-
-        var savedQuestions = game.questions;
-
-        for (var i=0; i<savedQuestions.length; i++) {
-            $scope.questions[savedQuestions[i].questionNum] = savedQuestions[i].question.question;
-
-            // player has submitted questions already
-            $scope.submitted = true;
-        }
 
         $scope.o.findFirstEmptyQuestion = function(callback) {
             for (var i = 0; i<$scope.questions.length; i++) {
@@ -559,28 +544,46 @@ luna
         };
 
         $scope.submitQuestions = function() {
-            if (!$scope.submitted) {
-                $scope.submitted = true;
-                $scope.o.oldQuestionsActive = false;
-                var questionReq = {
-                    questions: $scope.questions
-                };
-                games.addQuestions($stateParams.id, questionReq, function(data) {
-                    $scope.goToPhase(data.phase, function() {
-                        growlService.growl('Submitted questions!', 'inverse');
-                    });
-                });
-            }
+            $scope.o.oldQuestionsActive = false;
+            var questionReq = {
+                questions: $scope.questions
+            };
+            games.addQuestions(questionReq, function(newGame) {
+                $location.path('/home/'+newGame._id+'/interview');
+                $scope.getCurrentGames(function() {});
+            });
         };
 
         $scope.openOldQuestions = function() {
-            $state.go('home.game.interview.oldquestions', { id: $scope.gameID });
+            $state.go('home.preinterview.oldquestions', { id: $scope.gameID });
             $scope.o.oldQuestionsActive = true;
         };
 
         $scope.o.closeOldQuestions = function () {
             $scope.o.oldQuestionsActive = false;
         };
+
+    }])
+
+    // Interview
+    .controller('interviewCtrl', [
+        '$scope',
+        'auth',
+        'games',
+        'game', 
+        function($scope, auth, games, game){
+
+        $scope.gameID = game._id;
+        $scope.questions = [];
+        $scope.submitted = true;
+        $scope.active = true;
+        $scope.isNew = true;
+
+        var savedQuestions = game.questions;
+
+        for (var i=0; i<savedQuestions.length; i++) {
+            $scope.questions[savedQuestions[i].questionNum] = savedQuestions[i].question.question;
+        }
 
     }])
 
@@ -747,10 +750,9 @@ luna
     // Old Questions
     .controller('oldquestionsCtrl', [
         '$scope',
-        '$stateParams',
         'growlService',
         'questions',
-        function($scope, $stateParams, growlService, questions){
+        function($scope, growlService, questions){
 
         $scope.oldQuestions = questions.oldQuestions;
         
