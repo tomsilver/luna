@@ -543,7 +543,7 @@ var saveGameInMongo = function(player, game, callback) {
 	});
 
 	getPlayerFromGame(game, op, function(opponent) {
-		if (opponent)
+		if (typeof opponent != "undefined")
 			sendNotificationEmail(opponent);
 	});
 };
