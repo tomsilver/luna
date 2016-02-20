@@ -5,9 +5,7 @@ require('./models/Questions');
 require('./models/Responses');
 require('./models/Games');
 
-//var mongoStr = 'mongodb://tomluna:'+process.env.SECRET+'@ec2-52-23-169-221.compute-1.amazonaws.com:27017/luna';
-
-var mongoStr = 'mongodb://localhost:27017/luna';
+var mongoStr = 'mongodb://tomluna:'+process.env.SECRET+'@ec2-52-23-169-221.compute-1.amazonaws.com:27017/luna';
 
 mongoose.connect(mongoStr);
 
