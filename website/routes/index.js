@@ -370,7 +370,7 @@ router.post('/home', auth, function(req, res, next) {
 	    	else {
 
 				/* first check if there are any open games */
-				var excludes = [{"player2": null}, {"player1": { $ne: player }}];
+				var excludes = [{"player2": null}, {"player1": { $ne: player }}, {"active": true}];
 				
 				/* exclude active opponents */
 				getCurrentOpponents(player, function(opponents){
