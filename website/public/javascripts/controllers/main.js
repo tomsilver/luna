@@ -547,8 +547,13 @@ luna
                 questions: $scope.questions
             };
             games.addQuestions(questionReq, function(newGame) {
-                $location.path('/home/'+newGame._id+'/interview');
-                $scope.getCurrentGames(function() {});
+                if (newGame) {
+                    $location.path('/home/'+newGame._id+'/interview');
+                    $scope.getCurrentGames(function() {});
+                }
+                else {
+                    growlService.growl("You may only have 8 active games.");
+                }
             });
         };
 

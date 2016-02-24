@@ -153,7 +153,7 @@ var individualizeGame = function(player, game, callback) {
 		opQuestions = game['questions'+String(oNum)];
 		if (phase > 3) {
 			opResponses = game['responses'+String(oNum)];
-			if (phase > 5) {
+			if (phase > 8) {
 				opGuess = game['guess'+String(oNum)];
 				smartsRating = game['newSmartsRating'+String(pNum)];
 				opSmartsRating = game['smartsRating'+String(oNum)];
