@@ -509,7 +509,7 @@ luna
 
         $scope.o.findFirstEmptyQuestion = function(callback) {
             for (var i = 0; i<$scope.questions.length; i++) {
-                if ($scope.questions[i] == '') {
+                if (!$scope.questions[i] || $scope.questions[i].length <= 0) {
                     callback(i);
                     return;
                 }
