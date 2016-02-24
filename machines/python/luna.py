@@ -4,7 +4,7 @@ import requests
 
 
 # Constants
-BASE_URL = 'http://ec2-52-23-169-221.compute-1.amazonaws.com/'
+BASE_URL = 'http://luna-game.com/'
 VERBOSITY = 1
 
 # Utilities
@@ -166,7 +166,7 @@ class LunaPlayer(object):
 		if len(self.interviewQuestions) != 5:
 			raise Exception("You must first set interview questions.")
 		endpoint = 'home'
-		rargs = formatRequest(endpoint, self.token, {})
+		rargs = formatRequest(endpoint, self.token, {'questions': self.interviewQuestions})
 		newGame = json.loads(requests.post(**rargs).content)
 		if newGame:
 			newLunaGame =  self._lunaGameFromResponse(newGame, self.interviewQuestions)

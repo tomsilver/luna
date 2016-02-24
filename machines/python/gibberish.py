@@ -1,15 +1,15 @@
 from luna import LunaPlayer
 
-import cleverbot
 import csv
+import string
+import random
 import os
 import time
 
 dummyQuestions = ['What color is the sky?', 'What is the direct object in this sentence: "The boy threw the ball to the dog"?', "Why is 6 afraid of 7?", "Why does poverty exist?", "What is the capital of New York?"]
 dummyAnswers = ['blue', 'ball', '7 8 9', 'poverty', 'albany']
 
-CB = cleverbot.Cleverbot()
-print "Loaded cleverbot"
+print "Loaded gibberish bot"
 
 def loadToken(tokenName, tokenDir='../tokens'):
 	tokenFile = os.path.join(tokenDir, tokenName)
@@ -20,7 +20,8 @@ def loadToken(tokenName, tokenDir='../tokens'):
 
 def myResponseFunction(question):
 	time.sleep(1)
-	return CB.ask(question)
+	N = random.randint(1, 200)
+	return ''.join(random.choice(string.ascii_uppercase + string.digits + ' ') for _ in range(N))
 
 def myGuessFunction(responses):
 	guess = 0
@@ -36,7 +37,7 @@ def startNewGame(player):
 
 
 if __name__ == '__main__':
-	myToken = loadToken('machine1.csv')
+	myToken = loadToken('machine2.csv')
 	myPlayer = LunaPlayer(myToken, myResponseFunction, myGuessFunction)
 	myPlayer.setInterviewQuestions(dummyQuestions)
 	startNewGame(myPlayer)
