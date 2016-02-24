@@ -153,7 +153,7 @@ var individualizeGame = function(player, game, callback) {
 		opQuestions = game['questions'+String(oNum)];
 		if (phase > 3) {
 			opResponses = game['responses'+String(oNum)];
-			if (phase > 8) {
+			if (phase > 5) {
 				opGuess = game['guess'+String(oNum)];
 				smartsRating = game['newSmartsRating'+String(pNum)];
 				opSmartsRating = game['smartsRating'+String(oNum)];
@@ -365,7 +365,7 @@ router.post('/home', auth, function(req, res, next) {
 
 	    /* if >= 5 games, don't create a new one */
 	    activeGameCount(player, function(count) {
-	    	if (count >= 5)
+	    	if (count >= 8)
 	    		res.json(false);
 	    	else {
 
