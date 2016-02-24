@@ -51,11 +51,11 @@
                 <p><strong>By clicking "Continue" below, you acknowledge the above and confirm that you are at 18 years or older.</strong></p>
 
                 <div class="row">
-                    <div ng-hide="signUp.v" class="col-sm-4" style="padding: 5px;">
-                        <button ng-click="registerGuest()" class="btn btn-primary btn-block bgm-green">Continue</button>
+                    <div ng-hide="proceedingAsSignUp" class="col-sm-4" style="padding: 5px;">
+                        <button ng-click="proceedToRegisterGuest()" class="btn btn-primary btn-block bgm-green">Continue</button>
                     </div>
-                    <div ng-show="signUp.v" class="col-sm-4" style="padding: 5px;">
-                        <button ng-click="register()" class="btn btn-primary btn-block bgm-green">Continue</button>
+                    <div ng-show="proceedingAsSignUp" class="col-sm-4" style="padding: 5px;">
+                        <button ng-click="proceedToRegister()" class="btn btn-primary btn-block bgm-green">Continue</button>
                     </div>
                     <div class="col-sm-4" style="padding: 5px;">
                         <button data-ui-sref="about" class="btn btn-primary btn-block bgm-bluegray">Learn More</button>

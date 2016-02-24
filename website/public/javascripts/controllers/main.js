@@ -167,16 +167,14 @@ luna
         'auth',
         function($scope, $state, auth){
 
-        $scope.register = function() {
+        $scope.proceedToRegister = function() {
             $scope.signUp.c = true;
             $state.go('register');   
         };
 
-        $scope.registerGuest = function() {
-            auth.registerGuest(function(){
-                $scope.signUp.c = true;
-                $state.go('about');
-            });    
+        $scope.proceedToRegisterGuest = function() {
+            $scope.signUp.c = true;
+            $state.go('registerGuest');    
         };
 
     }])

@@ -204,6 +204,9 @@ luna
                 if(auth.isLoggedIn()){
                   $state.go('home.new');
                 }
+                else if (auth.isGuest()) {
+                  $state.go('registerGuest');
+                }
               }]
             })
 
