@@ -174,7 +174,15 @@ luna
 
         $scope.proceedToRegisterGuest = function() {
             $scope.signUp.c = true;
-            $state.go('registerGuest');    
+            if (auth.isGuest()) {
+                $state.go('registerGuest');    
+            }
+            else {
+                auth.registerGuest(function(){
+                $scope.signUp.c = true;
+                $state.go('about');
+            }); 
+            }
         };
 
     }])
